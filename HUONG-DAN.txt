@@ -1,0 +1,17 @@
+YHCT ON THI - PHAN TRAC NGHIEM
+
+1. Giu nguyen ca thu muc "YHCT-on-thi" khi chep sang dien thoai hoac may tinh.
+2. Mo file index.html bang trinh duyet. Khong can Internet.
+3. Ket qua, cau sai va cau danh dau duoc luu tren thiet bi dang dung.
+
+Noi dung hien co:
+- 325 cau trac nghiem, 13 bai.
+- Hoc toan bo, lam ngau nhien 25 cau, hoc theo bai.
+- Cham dung/sai ngay sau khi chon dap an.
+- On lai cac cau da lam sai; danh dau cau can nho.
+- Tai lieu on tap mo offline trong app.
+- 14 case lam sang: case co ban va case nang cao co phoi hop.
+- Moi case co ghi nhap tu luu va loi giai tung buoc.
+
+Luu y: Day la cong cu on tap. Phan phuong thuoc va ky thuat dieu tri duoc trinh bay
+theo tai lieu hoc phan de luyen thi, khong thay the tu van/chi dinh dieu tri.

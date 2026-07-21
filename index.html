@@ -1,0 +1,4183 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e6655" id="metaThemeColor">
+  <title>YHCT Ôn thi · Cẩm nang Trạm thi toàn diện</title>
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('yhct_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --ink: #153c36;
+      --muted: #5c7872;
+      --paper: #f5faf7;
+      --line: #d3e5de;
+      --brand: #0e6655;
+      --brand2: #084d40;
+      --good: #0d7a5f;
+      --bad: #b53d45;
+      --warm: #d97706;
+      --accent: #0284c7;
+      --purple: #6b21a8;
+      --card-bg: #ffffff;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    /* CSS CHO TRẠM FLASHCARD */
+    .fc-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      padding: 16px;
+    }
+
+    .fc-container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .fc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+    }
+
+    .fc-header h3 {
+      margin: 0;
+      color: var(--brand2, #059669);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .fc-close {
+      background: #f1f5f9;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hiệu ứng 3D Card */
+    .fc-scene {
+      width: 100%;
+      height: 260px;
+      perspective: 1000px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .fc-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .fc-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .fc-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      box-sizing: border-box;
+    }
+
+    .fc-front {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+    }
+
+    .fc-back {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      transform: rotateY(180deg);
+      border: 2px solid #047857;
+    }
+
+    .fc-label {
+      font-size: 12px;
+      font-weight: bold;
+      opacity: 0.85;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .fc-front h2 {
+      color: #0f172a;
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .fc-back h2 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .fc-hint {
+      font-size: 13px;
+      color: #059669;
+      margin-top: 18px;
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    .fc-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .fc-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      flex: 1;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .fc-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .fc-btn-primary {
+      background: var(--brand2, #059669);
+      color: white;
+    }
+
+    .fc-btn-warm {
+      background: #d97706;
+      color: white;
+    }
+
+    /* CSS KHU VUI CHƠI Y LÝ */
+    .game-zone-container {
+      background: #fdfbf7;
+      border: 2px dashed #d4a373;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .game-zone-title {
+      color: #8b5a2b;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .game-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-game {
+      background: #faedcd;
+      border: 1px solid #d4a373;
+      color: #8b5a2b;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .btn-game:hover {
+      background: #d4a373;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
+    }
+
+    /* Khung Modal Game */
+    .game-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      padding: 16px;
+    }
+
+    .game-modal-content {
+      background: white;
+      width: 95%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      box-sizing: border-box;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .game-header h3 {
+      margin: 0;
+      color: #1e293b;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .btn-close-game {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Dành cho Game 1: Nối Tơ Hồng */
+    .match-grid {
+      display: flex;
+      gap: 16px;
+    }
+
+    .match-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-item {
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      transition: 0.2s;
+      font-size: 0.88rem;
+      background: #f8fafc;
+    }
+
+    .match-item.selected {
+      background: #fef08a;
+      border-color: #eab308;
+      color: #854d0e;
+    }
+
+    .match-item.correct {
+      background: #10b981;
+      border-color: #059669;
+      color: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .match-item.wrong {
+      background: #ef4444;
+      border-color: #dc2626;
+      color: white;
+    }
+
+    /* Dành cho Game 2: Tìm Lỗi Sai */
+    .error-text-container {
+      font-size: 15px;
+      line-height: 1.8;
+      text-align: justify;
+    }
+
+    .error-clickable {
+      display: inline-block;
+      padding: 3px 7px;
+      margin: 3px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .error-clickable:hover {
+      background: #e2e8f0;
+    }
+
+    .error-found {
+      background: #ef4444;
+      color: white;
+      border-color: #dc2626;
+      font-weight: 700;
+    }
+
+    .no-error {
+      background: #10b981;
+      color: white;
+      border-color: #059669;
+    }
+
+    /* Dành cho Game 3: Kê Đơn Tốc Độ */
+    .quiz-timer {
+      height: 10px;
+      background: #10b981;
+      border-radius: 5px;
+      transition: width 1s linear;
+      margin-bottom: 16px;
+    }
+
+    .quiz-question {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-option {
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+      font-weight: 600;
+    }
+
+    .btn-option:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .btn-option.correct {
+      background: #10b981;
+      color: white;
+      border-color: #059669;
+    }
+
+    .btn-option.wrong {
+      background: #ef4444;
+      color: white;
+      border-color: #dc2626;
+    }
+
+    .app {
+      max-width: 880px;
+      margin: auto;
+      min-height: 100vh;
+      padding: 16px 16px 48px;
+    }
+
+    /* Header & Nav */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0 18px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -.03em;
+      font-size: 1.35rem;
+      color: var(--brand2);
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      letter-spacing: 0;
+      font-size: .76rem;
+      font-weight: 600;
+    }
+
+    .pill {
+      border: 0;
+      border-radius: 999px;
+      background: #e0f2ed;
+      color: var(--brand2);
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: .85rem;
+      transition: .15s;
+    }
+
+    .pill:hover {
+      background: #ceeade;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin: 0 0 20px;
+      padding: 5px;
+      border-radius: 16px;
+      background: #e2f0eb;
+    }
+
+    .nav button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 4px;
+      background: transparent;
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 800;
+      transition: .15s;
+      white-space: nowrap;
+    }
+
+    .nav button.active {
+      color: var(--brand2);
+      background: white;
+      box-shadow: 0 3px 10px #0e665518;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0e6655 0%, #197d6a 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 30px #0e66552b;
+      margin-bottom: 20px;
+    }
+
+    .hero.purple {
+      background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%);
+      box-shadow: 0 12px 30px #6b21a82b;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.15;
+      margin: 0 0 8px;
+      letter-spacing: -.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: .92;
+      font-size: .92rem;
+    }
+
+    /* Filter Pills */
+    .case-filters {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .case-filter {
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: .82rem;
+      font-weight: 800;
+      transition: .15s;
+    }
+
+    .case-filter:hover {
+      border-color: var(--brand);
+    }
+
+    .case-filter.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+      box-shadow: 0 4px 12px #0e66552b;
+    }
+
+    .case-filter .badge-num {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 99px;
+      padding: 1px 6px;
+      font-size: .74rem;
+      margin-left: 4px;
+    }
+
+    /* Cheat Sheet Cards & Navigation */
+    .cheat-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin: 16px 0 20px;
+      padding: 4px;
+      background: #ede9fe;
+      border-radius: 14px;
+    }
+
+    .cheat-nav button {
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: transparent;
+      font-size: .8rem;
+      font-weight: 800;
+      color: #5b21b6;
+      white-space: nowrap;
+    }
+
+    .cheat-nav button.active {
+      background: white;
+      color: #4c1d95;
+      box-shadow: 0 2px 8px #6d28d91f;
+    }
+
+    .cheat-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 10px #0e66550a;
+    }
+
+    .cheat-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      color: var(--brand2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cheat-card h3 .icon-tag {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #e0f2ed;
+      color: var(--brand);
+      font-size: .9rem;
+    }
+
+    .cheat-card p {
+      margin: 0 0 10px;
+      font-size: .9rem;
+      color: #2c4e46;
+      line-height: 1.6;
+    }
+
+    /* High-Yield Accordion */
+    .tip-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .tip-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: white;
+      border: 0;
+      font-weight: 700;
+      color: var(--brand2);
+      text-align: left;
+      font-size: .92rem;
+    }
+
+    .tip-head:hover {
+      background: #f4faf7;
+    }
+
+    .tip-body {
+      padding: 16px;
+      background: #f7faf8;
+      border-top: 1px solid var(--line);
+      font-size: .88rem;
+      line-height: 1.6;
+      color: #1a3d35;
+      white-space: pre-line;
+    }
+
+    /* Matrix Table */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      font-size: .84rem;
+      text-align: left;
+    }
+
+    .matrix-table th {
+      background: #0e6655;
+      color: white;
+      padding: 12px 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .matrix-table th.purple {
+      background: #5b21b6;
+    }
+
+    .matrix-table td {
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.5;
+      color: #1f3d36;
+    }
+
+    .matrix-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .matrix-table tr:nth-child(even) {
+      background: #f8fcfb;
+    }
+
+    .matrix-table strong {
+      color: var(--brand2);
+    }
+
+    /* Callout & Formula Box */
+    .formula-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 12px 0;
+      color: #166534;
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
+    .formula-box strong {
+      color: #14532d;
+      display: block;
+      font-size: .95rem;
+      margin-bottom: 4px;
+    }
+
+    .open-solution {
+      background: #fffbe8;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .open-solution h4 {
+      margin: 0 0 6px;
+      color: #92400e;
+      font-size: .95rem;
+    }
+
+    .open-solution p {
+      margin: 0;
+      color: #78350f;
+      font-size: .88rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    /* Lists */
+    .material-list,
+    .case-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .material {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      color: var(--ink);
+      text-decoration: none;
+      transition: .15s;
+    }
+
+    .material:hover {
+      border-color: #6cb5a2;
+      transform: translateY(-1px);
+    }
+
+    .material-icon {
+      font-size: 1.4rem;
+      color: var(--brand);
+    }
+
+    .material strong {
+      display: block;
+      font-size: .95rem;
+      line-height: 1.25;
+    }
+
+    .material small {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      margin-top: 2px;
+    }
+
+    /* Case Items */
+    .case-item {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 20px;
+      padding: 18px;
+      text-align: left;
+      color: var(--ink);
+      transition: .15s;
+      box-shadow: 0 2px 6px #0e665508;
+    }
+
+    .case-item:hover {
+      border-color: var(--brand);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px #0e665512;
+    }
+
+    .case-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .case-badge {
+      font-size: .72rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e0f2ed;
+      color: var(--brand2);
+    }
+
+    .case-badge.exam {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .case-badge.advanced {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .case-item strong {
+      display: block;
+      font-size: 1.02rem;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .case-item small {
+      display: block;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.4;
+    }
+
+    /* OSCE Station Detail View */
+    .study-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .study-head button {
+      border: 0;
+      background: none;
+      color: var(--brand);
+      font-weight: 800;
+      padding: 4px 0;
+      font-size: .95rem;
+    }
+
+    .station-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 14px #0e66550a;
+    }
+
+    .station-card h3 {
+      font-size: 1.2rem;
+      margin: 8px 0 10px;
+      color: var(--brand2);
+      line-height: 1.3;
+    }
+
+    .station-card .case-text {
+      background: #f7faf8;
+      border-left: 4px solid var(--brand);
+      padding: 14px;
+      border-radius: 0 14px 14px 0;
+      font-size: .94rem;
+      line-height: 1.6;
+      color: #22443d;
+      white-space: pre-line;
+    }
+
+    .station-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin: 20px 0 16px;
+      padding: 4px;
+      background: #e6f2ed;
+      border-radius: 14px;
+    }
+
+    .station-nav button {
+      border: 0;
+      padding: 9px 13px;
+      border-radius: 10px;
+      background: transparent;
+      font-size: .8rem;
+      font-weight: 800;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .station-nav button.active {
+      background: white;
+      color: var(--brand2);
+      box-shadow: 0 2px 6px #0e665512;
+    }
+
+    /* 10 Criteria Accordion */
+    .criteria-box {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .criterion {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      overflow: hidden;
+      transition: .15s;
+    }
+
+    .criterion-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: white;
+      border: 0;
+      text-align: left;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: .92rem;
+    }
+
+    .criterion-head:hover {
+      background: #f5faf7;
+    }
+
+    .criterion-head .num-tag {
+      font-size: .76rem;
+      background: #e0f2ed;
+      color: var(--brand2);
+      border-radius: 99px;
+      padding: 2px 8px;
+      margin-right: 8px;
+      font-weight: 800;
+    }
+
+    .criterion-body {
+      padding: 16px;
+      background: #f7fcf9;
+      border-top: 1px solid var(--line);
+      font-size: .88rem;
+      line-height: 1.6;
+      color: #1a3d35;
+      white-space: pre-line;
+    }
+
+    .criterion-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+      font-size: .8rem;
+    }
+
+    .miss-btn {
+      border: 1px solid var(--line);
+      background: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .miss-btn.flagged {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+
+    /* Practice Widgets (Q2) */
+    .practice-sec {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .practice-sec h4 {
+      margin: 0 0 10px;
+      font-size: 1.02rem;
+      color: var(--brand2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .practice-sec h4 .step-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: white;
+      font-size: .76rem;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .huyet-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .huyet-chip {
+      border: 1px solid var(--line);
+      background: #f4fbf8;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: .84rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+      transition: .15s;
+    }
+
+    .huyet-chip:hover {
+      border-color: var(--brand);
+    }
+
+    .huyet-chip.selected {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+    }
+
+    .huyet-detail-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .huyet-card {
+      border: 1px solid var(--line);
+      background: #f7fcf9;
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .huyet-card strong {
+      display: block;
+      color: var(--brand2);
+      font-size: .9rem;
+    }
+
+    .huyet-card span {
+      display: block;
+      color: var(--muted);
+      font-size: .8rem;
+      margin-top: 2px;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #f8faf9;
+      border-radius: 12px;
+      font-size: .86rem;
+      border: 1px solid var(--line);
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brand);
+      margin-top: 2px;
+    }
+
+    /* Open Question Box */
+    .open-q-box {
+      background: #fffbe8;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .open-q-box h4 {
+      margin: 0 0 8px;
+      color: #92400e;
+      font-size: .98rem;
+    }
+
+    .open-q-box p {
+      margin: 0 0 12px;
+      color: #78350f;
+      font-size: .9rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .open-a-ans {
+      background: white;
+      border: 1px solid #fef3c7;
+      padding: 14px;
+      border-radius: 14px;
+      color: #451a03;
+      font-size: .88rem;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    /* Reasoning "Vì sao" Box */
+    .reasoning-box {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .reasoning-box h4 {
+      margin: 0 0 12px;
+      color: #3730a3;
+      font-size: .98rem;
+    }
+
+    .reasoning-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: .84rem;
+      border: 1px solid #e0e7ff;
+    }
+
+    .reasoning-item strong {
+      color: #312e81;
+    }
+
+    .reasoning-item span {
+      color: #1e1b4b;
+      font-weight: 700;
+    }
+
+    @media (max-width:560px) {
+      .reasoning-item {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Active Recall / Spoiler Blur */
+    .spoiler-hint {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .spoiler-text {
+      filter: blur(6px);
+      transition: filter 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .spoiler-text:hover,
+    .spoiler-text.revealed {
+      filter: blur(0);
+    }
+
+    /* Interactive Keywords (Symptom Tag) */
+    .symptom-tag {
+      border-bottom: 2px dashed #0284c7;
+      color: #0369a1;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: #f0f9ff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      position: relative;
+      display: inline-block;
+    }
+
+    .symptom-tag:hover {
+      background-color: #bae6fd;
+      color: #0c4a6e;
+    }
+
+    .symptom-tooltip {
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .symptom-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #0f172a transparent transparent transparent;
+    }
+
+    /* Mini-game Bát Cương */
+    .bat-cuong-game-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .bat-cuong-selects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .select-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    .select-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: #1e293b;
+      background: white;
+    }
+
+    /* Ghép nối Huyệt (Match the Acupoint) */
+    .matching-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .matching-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .matching-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .col-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brand2);
+      margin: 0 0 4px 0;
+    }
+
+    .match-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.84rem;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .match-card:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .match-card.selected {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      color: #0369a1;
+      font-weight: 600;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .match-card.matched {
+      border-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+      font-weight: 600;
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .match-card.mismatch {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-4px);
+      }
+
+      75% {
+        transform: translateX(4px);
+      }
+    }
+
+    /* Scratchpad */
+    .scratch {
+      width: 100%;
+      min-height: 95px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      font: inherit;
+      color: var(--ink);
+      resize: vertical;
+      background: #fafdfb;
+    }
+
+    .save-note {
+      font-size: .75rem;
+      color: var(--muted);
+      margin: 4px 0 0
+    }
+
+    /* Quiz Components */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px 10px;
+      text-align: center;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 1.25rem;
+      color: var(--brand2);
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    h2 {
+      font-size: 1.08rem;
+      margin: 22px 0 10px;
+      color: var(--brand2);
+    }
+
+    .mode-row {
+      display: flex;
+      gap: 9px;
+      overflow: auto;
+      padding: 2px 1px;
+    }
+
+    .mode {
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 9px 15px;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .mode.active {
+      color: white;
+      border-color: var(--brand);
+      background: var(--brand);
+    }
+
+    .chapters {
+      display: grid;
+      gap: 9px;
+    }
+
+    .chapter {
+      width: 100%;
+      display: flex;
+      text-align: left;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      color: var(--ink);
+      transition: .15s;
+    }
+
+    .chapter:hover {
+      border-color: var(--brand);
+    }
+
+    .num {
+      flex: 0 0 34px;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #e0f2ed;
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    .chapter strong {
+      display: block;
+      font-size: .92rem;
+      line-height: 1.25;
+    }
+
+    .chapter small {
+      color: var(--muted);
+    }
+
+    .arrow {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 1.3rem;
+    }
+
+    .action {
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 8px 18px #0e66552b;
+      font-size: .95rem;
+    }
+
+    .action.secondary {
+      background: #e2f0eb;
+      color: var(--brand2);
+      box-shadow: none;
+      margin-top: 10px;
+    }
+
+    .quiz-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .back {
+      border: 0;
+      background: transparent;
+      color: var(--brand);
+      padding: 6px 0;
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    .progress {
+      flex: 1;
+      height: 8px;
+      border-radius: 99px;
+      overflow: hidden;
+      background: #dceae5;
+    }
+
+    .progress i {
+      display: block;
+      background: var(--brand);
+      height: 100%;
+      width: 0;
+      transition: .25s;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      color: var(--brand);
+      background: #e0f2ed;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: .76rem;
+      font-weight: 800;
+    }
+
+    .question {
+      font-size: 1.22rem;
+      line-height: 1.4;
+      margin: 12px 0 20px;
+      letter-spacing: -.02em;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      text-align: left;
+      padding: 14px;
+      border: 1.5px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      color: var(--ink);
+      transition: .15s;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: var(--brand);
+      background: #f8fdfb;
+    }
+
+    .option:disabled {
+      cursor: default;
+    }
+
+    .letter {
+      display: grid;
+      place-items: center;
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 50%;
+      color: var(--brand);
+      background: #e0f2ed;
+      font-weight: 800;
+      font-size: .84rem;
+    }
+
+    .option.correct {
+      background: #edfaf5;
+      border-color: var(--good);
+    }
+
+    .option.correct .letter {
+      color: white;
+      background: var(--good);
+    }
+
+    .option.wrong {
+      background: #fef2f2;
+      border-color: var(--bad);
+    }
+
+    .option.wrong .letter {
+      color: white;
+      background: var(--bad);
+    }
+
+    .feedback {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #edfaf5;
+      color: #0e614b;
+      font-weight: 700;
+    }
+
+    .feedback.bad {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .small-action {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px 15px;
+      background: white;
+      color: var(--brand);
+      font-weight: 800;
+      font-size: .88rem;
+    }
+
+    .next {
+      flex: 1;
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 15px;
+      background: var(--brand);
+      color: white;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+
+    .finish {
+      text-align: center;
+      padding: 32px 8px;
+    }
+
+    .finish .score {
+      font-size: 3.6rem;
+      font-weight: 900;
+      color: var(--brand);
+      letter-spacing: -.08em;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width:540px) {
+      .app {
+        padding: 14px 12px 36px;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.55rem;
+      }
+
+      .nav button {
+        font-size: .74rem;
+        padding: 8px 2px;
+      }
+    }
+
+    /* CHẾ ĐỘ TỐI (DARK MODE) */
+    [data-theme="dark"] {
+      --ink: #e2e8f0;
+      --muted: #94a3b8;
+      --paper: #0b1324;
+      --line: #1e293b;
+      --brand: #10b981;
+      --brand2: #34d399;
+      --good: #10b981;
+      --bad: #f87171;
+      --warm: #fbbf24;
+      --accent: #38bdf8;
+      --purple: #c084fc;
+      --card-bg: #152033;
+      color-scheme: dark;
+    }
+
+    [data-theme="dark"] body {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    [data-theme="dark"] .brand {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .brand small {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .pill {
+      background: #1e3a34;
+      color: #6ee7b7;
+    }
+
+    [data-theme="dark"] .pill:hover {
+      background: #065f46;
+    }
+
+    [data-theme="dark"] .nav {
+      background: #152033;
+      border: 1px solid #1e293b;
+    }
+
+    [data-theme="dark"] .nav button {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .nav button.active {
+      color: #34d399;
+      background: #0b1324;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .case-filter {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .case-filter:hover {
+      border-color: var(--brand);
+    }
+
+    [data-theme="dark"] .case-filter.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #0b1324;
+      font-weight: 800;
+    }
+
+    [data-theme="dark"] .cheat-nav {
+      background: #1e1b4b;
+      border: 1px solid #312e81;
+    }
+
+    [data-theme="dark"] .cheat-nav button {
+      color: #c4b5fd;
+    }
+
+    [data-theme="dark"] .cheat-nav button.active {
+      background: #312e81;
+      color: #e0e7ff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .cheat-card {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .cheat-card h3 {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .cheat-card h3 .icon-tag {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .cheat-card p {
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .tip-item {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .tip-head {
+      background: #152033;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .tip-head:hover {
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .tip-body {
+      background: #0b1324;
+      border-top-color: #1e293b;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .matrix-table {
+      background: #152033;
+    }
+
+    [data-theme="dark"] .matrix-table th {
+      background: #064e3b;
+      color: #ecfdf5;
+    }
+
+    [data-theme="dark"] .matrix-table th.purple {
+      background: #4c1d95;
+    }
+
+    [data-theme="dark"] .matrix-table td {
+      border-bottom-color: #1e293b;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .matrix-table tr:nth-child(even) {
+      background: #0b1324;
+    }
+
+    [data-theme="dark"] .matrix-table strong {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .formula-box {
+      background: rgba(6, 78, 59, 0.4);
+      border-color: #059669;
+      color: #a7f3d0;
+    }
+
+    [data-theme="dark"] .formula-box strong {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .open-solution {
+      background: rgba(120, 53, 15, 0.3);
+      border-color: #b45309;
+    }
+
+    [data-theme="dark"] .open-solution h4 {
+      color: #fde047;
+    }
+
+    [data-theme="dark"] .open-solution p {
+      color: #fef08a;
+    }
+
+    [data-theme="dark"] .material {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .material:hover {
+      border-color: #10b981;
+    }
+
+    [data-theme="dark"] .material-icon {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .case-item {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .case-item:hover {
+      border-color: #10b981;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+    }
+
+    [data-theme="dark"] .case-badge {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .case-badge.exam {
+      background: #1e3a8a;
+      color: #93c5fd;
+      border-color: #1d4ed8;
+    }
+
+    [data-theme="dark"] .case-badge.advanced {
+      background: #78350f;
+      color: #fde047;
+      border-color: #b45309;
+    }
+
+    [data-theme="dark"] .study-head button {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .station-card {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .station-card h3 {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .station-card .case-text {
+      background: #0b1324;
+      border-left-color: #10b981;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .station-nav {
+      background: #0b1324;
+      border: 1px solid #1e293b;
+    }
+
+    [data-theme="dark"] .station-nav button {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .station-nav button.active {
+      background: #152033;
+      color: #34d399;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .criterion {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .criterion-head {
+      background: #152033;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .criterion-head:hover {
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .criterion-head .num-tag {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .criterion-body {
+      background: #0b1324;
+      border-top-color: #1e293b;
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .criterion-actions {
+      border-top-color: #1e293b;
+    }
+
+    [data-theme="dark"] .miss-btn {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .miss-btn.flagged {
+      background: #450a0a;
+      border-color: #991b1b;
+      color: #fca5a5;
+    }
+
+    [data-theme="dark"] .practice-sec {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .practice-sec h4 {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .huyet-chip {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .huyet-chip:hover {
+      border-color: #10b981;
+    }
+
+    [data-theme="dark"] .huyet-chip.selected {
+      background: #10b981;
+      border-color: #10b981;
+      color: #0b1324;
+    }
+
+    [data-theme="dark"] .huyet-card {
+      background: #0b1324;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .huyet-card strong {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .huyet-card span {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .check-item {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .open-q-box {
+      background: rgba(120, 53, 15, 0.3);
+      border-color: #b45309;
+    }
+
+    [data-theme="dark"] .open-q-box h4 {
+      color: #fde047;
+    }
+
+    [data-theme="dark"] .open-q-box p {
+      color: #fef08a;
+    }
+
+    [data-theme="dark"] .open-a-ans {
+      background: #152033;
+      border-color: #78350f;
+      color: #fef08a;
+    }
+
+    [data-theme="dark"] .reasoning-box {
+      background: rgba(49, 46, 129, 0.3);
+      border-color: #4338ca;
+    }
+
+    [data-theme="dark"] .reasoning-box h4 {
+      color: #a5b4fc;
+    }
+
+    [data-theme="dark"] .reasoning-item {
+      background: #0b1324;
+      border-color: #312e81;
+    }
+
+    [data-theme="dark"] .reasoning-item strong {
+      color: #c7d2fe;
+    }
+
+    [data-theme="dark"] .reasoning-item span {
+      color: #e0e7ff;
+    }
+
+    [data-theme="dark"] .symptom-tag {
+      background-color: rgba(3, 105, 161, 0.3);
+      color: #38bdf8;
+      border-bottom-color: #0284c7;
+    }
+
+    [data-theme="dark"] .symptom-tag:hover {
+      background-color: rgba(2, 132, 199, 0.5);
+      color: #e0f2fe;
+    }
+
+    [data-theme="dark"] .bat-cuong-game-box {
+      background: #0b1324;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .select-group label {
+      color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .select-group select {
+      background: #152033;
+      color: #f8fafc;
+      border-color: #475569;
+    }
+
+    [data-theme="dark"] .col-title {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .match-card {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .match-card:hover {
+      border-color: #64748b;
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .match-card.selected {
+      border-color: #38bdf8;
+      background: rgba(3, 105, 161, 0.4);
+      color: #7dd3fc;
+    }
+
+    [data-theme="dark"] .match-card.matched {
+      border-color: #10b981;
+      background: rgba(6, 78, 59, 0.4);
+      color: #6ee7b7;
+    }
+
+    [data-theme="dark"] .scratch {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .stat {
+      background: #152033;
+      border-color: #1e293b;
+    }
+
+    [data-theme="dark"] .stat b {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] h2 {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .mode {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .mode.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #0b1324;
+    }
+
+    [data-theme="dark"] .chapter {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .chapter:hover {
+      border-color: var(--brand);
+    }
+
+    [data-theme="dark"] .num {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .action.secondary {
+      background: #1e3a34;
+      color: #6ee7b7;
+    }
+
+    [data-theme="dark"] .back {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .progress {
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .tag {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .question {
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .option {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .option:hover:not(:disabled) {
+      border-color: var(--brand);
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .letter {
+      background: #064e3b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .option.correct {
+      background: rgba(6, 78, 59, 0.4);
+      border-color: #10b981;
+    }
+
+    [data-theme="dark"] .option.wrong {
+      background: rgba(127, 29, 29, 0.4);
+      border-color: #f87171;
+    }
+
+    [data-theme="dark"] .feedback {
+      background: rgba(6, 78, 59, 0.4);
+      color: #6ee7b7;
+    }
+
+    [data-theme="dark"] .feedback.bad {
+      background: rgba(127, 29, 29, 0.4);
+      color: #fca5a5;
+    }
+
+    [data-theme="dark"] .small-action {
+      background: #152033;
+      border-color: #1e293b;
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .fc-container {
+      background: #152033;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .fc-header {
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .fc-header h3 {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .fc-close {
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .fc-front {
+      background: rgba(6, 78, 59, 0.3);
+      border-color: #059669;
+    }
+
+    [data-theme="dark"] .fc-front h2 {
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .fc-hint {
+      color: #34d399;
+    }
+
+    [data-theme="dark"] .game-zone-container {
+      background: #152033;
+      border-color: #b45309;
+    }
+
+    [data-theme="dark"] .game-zone-title {
+      color: #fde047;
+    }
+
+    [data-theme="dark"] .btn-game {
+      background: #78350f;
+      border-color: #b45309;
+      color: #fef08a;
+    }
+
+    [data-theme="dark"] .btn-game:hover {
+      background: #b45309;
+      color: white;
+    }
+
+    [data-theme="dark"] .game-modal-content {
+      background: #152033;
+      color: #e2e8f0;
+      border: 1px solid #1e293b;
+    }
+
+    [data-theme="dark"] .game-header {
+      border-bottom-color: #1e293b;
+    }
+
+    [data-theme="dark"] .game-header h3 {
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .match-item {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .match-item.selected {
+      background: #713f12;
+      border-color: #eab308;
+      color: #fef08a;
+    }
+
+    [data-theme="dark"] .error-clickable {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .error-clickable:hover {
+      background: #1e293b;
+    }
+
+    [data-theme="dark"] .quiz-question {
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .btn-option {
+      background: #0b1324;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .btn-option:hover {
+      background: #1e293b;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">YHCT Ôn thi<small>Y đa khoa · Luyện trạm & Cẩm nang thi toàn diện</small></div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="pill" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển chế độ sáng/tối">🌙 Tối</button>
+        <button class="pill" id="wrongBtn">Ôn câu sai</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <button class="active" data-page="cases">Luyện trạm thi</button>
+      <button data-page="cheat">💡 Bí kíp ôn thi</button>
+      <button data-page="home">Trắc nghiệm</button>
+      <button data-page="materials">Tài liệu</button>
+    </nav>
+
+    <!-- SECTION 1: BÍ KÍP ÔN THI TOÀN DIỆN (HIGH YIELD REVISION MANUAL) -->
+    <section id="cheat" class="hidden">
+      <div class="hero purple">
+        <h1>Cẩm nang Bí kíp Ôn thi YHCT</h1>
+        <p>Tổng hợp từ dàn ý vạn năng, ma trận 12 thể bệnh hay gặp, 30 huyệt vị lâm sàng, cổ phương kinh điển đến bộ xử
+          trí tình huống mở.</p>
+      </div>
+
+      <div class="cheat-nav">
+        <button class="active" id="cnav1" onclick="switchCheatTab('m1')">🌐 Dàn Ý Vạn Năng</button>
+        <button id="cnav2" onclick="switchCheatTab('m2')">📚 12 Thể Bệnh Thi</button>
+        <button id="cnav3" onclick="switchCheatTab('m3')">📌 30 Huyệt & Bát Hội</button>
+        <button id="cnav4" onclick="switchCheatTab('m4')">💊 Cổ Phương Kinh Điển</button>
+        <button id="cnav5" onclick="switchCheatTab('m5')">🚑 Bộ Xử Trí Tình Huống</button>
+      </div>
+
+      <!-- TAB 1: DÀN Ý VẠN NĂNG -->
+      <div id="ctab1">
+        <div class="cheat-card">
+          <h3><span class="icon-tag">🌐</span> Dàn ý Vạn năng giải MỌI đề thi YHCT (10 Mục Câu 1)</h3>
+          <p>Dù giảng viên ra bất kỳ bệnh lý hay case lâm sàng nào, bạn chỉ cần áp dụng đúng công thức điền 10 mục này
+            là đảm bảo ăn trọn điểm:</p>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t1')"><span>1. Chứng (Cơ năng + Thực thể + Lưỡi &
+                Mạch)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t1">
+              • <b>Công thức gom ý:</b>
+              - <i>Triệu chứng chính:</i> Đau/Yếu/Méo mặt/Sốt... + vị trí (mặt, thắt lưng, gối, nửa người).
+              - <i>Tính chất đau:</i> Đau dữ dội (thực/ứ), đau âm ỉ (hư), nặng nề (thấp), nóng rát (nhiệt), lạnh đau
+              tăng (hàn).
+              - <i>Dữ kiện thực thể:</i> Dấu Charles Bell, Lasegue, điểm Valex, tiếng lạo xạo khớp, sức cơ.
+              - <i>Mạch & Lưỡi:</i> Ghi chính xác như đề bài (rêu trắng mỏng/vàng nhớt/bệu, mạch phù khẩn/tế
+              sác/sáp/hoạt).
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t2')"><span>2. Nguyên nhân & Biện chứng luận
+                trị</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t2">
+              • <b>Cấu trúc 3 thành phần bắt buộc:</b>
+              1. <i>Nguyên nhân khởi phát:</i> Ngoại tà (Phong hàn, phong nhiệt, thấp) HOẶC Nội nhân (tự hãn, mệt mỏi,
+              stress) HOẶC Bất nội ngoại nhân (chấn thương, sai tư thế).
+              2. <i>Cơ chế bệnh sinh:</i> Tà khí xâm nhập bế tắc kinh lạc ➔ "Thông bất tắc, tắc bất thông" gây đau HOẶC
+              Tạng phủ suy hư (Can Thận hư, Tâm Tỳ hư) ➔ Cân cốt / Cơ mặt / Tâm trí mất nuôi dưỡng.
+              3. <i>Hệ quả:</i> Dẫn đến các biểu hiện cụ thể trên đề bài.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t3')"><span>3. Vị trí bệnh</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t3">
+              • Nêu rõ: <b>Kinh lạc</b> đi qua vùng đau (Kinh Bàng quang, Đởm, Vị, Dương minh) + <b>Tạng phủ</b> tổn
+              thương (Can, Thận, Phế, Tỳ, Tâm) + Nông/Sâu (<b>Biểu</b> hay <b>Lý</b>).
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t4')"><span>4. Bát cương</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t4">
+              • <b>Mẹo chẩn đoán Bát cương chính xác:</b>
+              - <i>Biểu ↔ Lý:</i> Mới mắc ngoại cảm, mạch phù ➔ <b>Biểu</b>. Bệnh lâu mạn tính, tạng phủ, tiểu đêm, mạch
+              trầm ➔ <b>Lý</b>.
+              - <i>Hàn ↔ Nhiệt:</i> Sợ lạnh, thích ấm, nước mũi trong, rêu trắng ➔ <b>Hàn</b>. Nóng rát, khát, đờm vàng,
+              rêu vàng ➔ <b>Nhiệt</b>.
+              - <i>Hư ↔ Thực:</i> Mới bị cấp tính, đau dữ dội, chấn thương ➔ <b>Thực</b>. Bệnh mạn tính kéo dài, mỏi
+              gối, gầy khô ➔ <b>Hư</b>.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t5')"><span>5. Bệnh danh YHCT</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t5">
+              Ghi rõ Bệnh danh cổ truyền + Thể bệnh (Ví dụ: <i>Tọa cốt thống – Thể phong hàn thấp</i>).
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t6')"><span>6. Pháp điều trị</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t6">
+              • <b>Công thức ghép Pháp trị:</b> [Khu/Tán tà ở Biểu] + [Hành khí/Hoạt huyết] + [Bổ Tạng phủ ở Lý].
+              - Ví dụ: <i>Khu phong tán hàn trừ thấp, hành khí hoạt huyết thông lạc; phối hợp Bổ Can Thận, cường gân
+                cốt.</i>
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t7')"><span>7. Điều trị dùng
+                thuốc</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t7">
+              Nêu tên bài thuốc tham khảo + Phân tích vị thuốc Quân - Thần - Tá - Sứ chính trong bài.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t8')"><span>8. Điều trị không dùng
+                thuốc</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t8">
+              Nêu đủ 3 phương pháp: Châm cứu (ôn châm/điện châm), Xoa bóp bấm huyệt, Vật lý trị liệu / Dưỡng sinh.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t9')"><span>9. Chế độ ăn uống, sinh
+                hoạt</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t9">
+              Đồ ăn thích hợp theo thể (ấm nóng/thanh mát), đồ kiêng kỵ (sống lạnh/chua cay) và chế độ vận động tránh
+              tái phát.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('t10')"><span>10. Tiên lượng và phòng
+                bệnh</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-t10">
+              Tiên lượng gần (tốt/khá), tiên lượng xa (dễ tái phát) và biện pháp phòng bệnh cụ thể.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: MA TRẬN 12 THỂ BỆNH THI HAY GẶP -->
+      <div id="ctab2" class="hidden">
+        <div class="cheat-card">
+          <h3><span class="icon-tag">📚</span> Bảng 12 Thể bệnh YHCT thường gặp</h3>
+          <p>Dù thầy cô ra bất kỳ bệnh nào trong 12 bệnh này, bạn đều có thể tra nhanh Bát cương, Thể bệnh và Bài thuốc
+            tương ứng:</p>
+
+          <!-- NÚT MỞ FLASHCARD -->
+          <div style="margin: 16px 0; text-align: center;">
+            <button id="btnOpenFlashcard"
+              style="background: linear-gradient(135deg, #059669, #0d9488); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(13,148,136,0.3); transition: transform 0.2s;"
+              onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+              ⚡ Luyện Phản Xạ (Flashcard 3D)
+            </button>
+          </div>
+
+          <!-- KHU VUI CHƠI Y LÝ -->
+          <div class="game-zone-container">
+            <h3 class="game-zone-title">🎮 Trạm Giải Trí (Ép Xung Não Bộ)</h3>
+            <div class="game-buttons">
+              <button class="btn-game" onclick="startMatchingGame()">🔗 1. Nối Tơ Hồng</button>
+              <button class="btn-game" onclick="startFindErrorGame()">🕵️ 2. Bắt Lỗi Bệnh Án</button>
+              <button class="btn-game" onclick="startQuizGame()">⏱️ 3. Kê Đơn 10 Giây</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th class="purple">Tên bệnh (YHHĐ)</th>
+                  <th class="purple">Bệnh danh YHCT</th>
+                  <th class="purple">Thể bệnh YHCT</th>
+                  <th class="purple">Triệu chứng</th>
+                  <th class="purple">Chẩn đoán Bát cương</th>
+                  <th class="purple">Bài thuốc chủ trị</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Liệt VII ngoại biên</strong></td>
+                  <td>Khẩu nhãn oa tà</td>
+                  <td>Phong hàn tập lạc</td>
+                  <td>Méo miệng, mắt không kín, rêu trắng, mạch phù</td>
+                  <td>Biểu – Hàn – Thực</td>
+                  <td>Khương hoạt thắng thấp thang / Đại tần giao thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Liệt VII mạn/kéo dài</strong></td>
+                  <td>Khẩu nhãn oa tà</td>
+                  <td>Khí huyết hư / Can Thận hư</td>
+                  <td>Cơ mặt yếu kéo dài, sắc nhợt, lưỡi nhợt, mạch tế</td>
+                  <td>Lý – Hư</td>
+                  <td>Bát trân thang gia giảm</td>
+                </tr>
+                <tr>
+                  <td><strong>Đau thần kinh tọa (cấp)</strong></td>
+                  <td>Tọa cốt thống</td>
+                  <td>Khí trệ huyết ứ (bê nặng)</td>
+                  <td>Đau như kim châm, đau đêm, lưỡi tím điểm ứ, mạch sáp</td>
+                  <td>Lý – Thực</td>
+                  <td>Thân thống trục ứ thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Đau thần kinh tọa (mạn)</strong></td>
+                  <td>Tọa cốt thống</td>
+                  <td>Phong hàn thấp + Can Thận hư</td>
+                  <td>Đau tăng khi lạnh, mỏi gối ù tai, rêu trắng, mạch trầm tế</td>
+                  <td>Lý kiêm Biểu, Hư thực thác tạp</td>
+                  <td>Độc hoạt ký sinh thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Đau khớp gối mạn</strong></td>
+                  <td>Hạc tất phong / Thấp khớp</td>
+                  <td>Phong hàn thấp tý + Can Thận hư</td>
+                  <td>Khớp gối lạo xạo, đau nặng nề khi mưa lạnh, rêu trắng nhầy</td>
+                  <td>Lý kiêm Biểu, Hư thực thác tạp</td>
+                  <td>Độc hoạt ký sinh thang / Quyên tý thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Di chứng đột quỵ</strong></td>
+                  <td>Trúng phong di chứng</td>
+                  <td>Can Thận âm hư / Âm hư hỏa vượng</td>
+                  <td>Yếu nửa người, da khô gầy, nóng lòng bàn chân, lưỡi đỏ ít rêu</td>
+                  <td>Lý – Hư Nhiệt</td>
+                  <td>Lục vị địa hoàng thang gia giảm</td>
+                </tr>
+                <tr>
+                  <td><strong>Di chứng đột quỵ (khí hư)</strong></td>
+                  <td>Trúng phong di chứng</td>
+                  <td>Khí hư huyết ứ</td>
+                  <td>Liệt nửa người, mệt mỏi, sắc nhợt, lưỡi nhợt điểm ứ, mạch tế sáp</td>
+                  <td>Lý – Hư thực thác tạp</td>
+                  <td>Bổ dương hoàn ngũ thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Cảm mạo phong hàn</strong></td>
+                  <td>Cảm mạo phong hàn</td>
+                  <td>Phong hàn phạm Phế vệ</td>
+                  <td>Sợ lạnh, hắt xì, nước mũi trong, rêu trắng mỏng, mạch phù khẩn</td>
+                  <td>Biểu – Hàn – Thực</td>
+                  <td>Kinh phòng bại độc tán / Cửu vị khương hoạt thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Cảm mạo phong nhiệt</strong></td>
+                  <td>Cảm mạo phong nhiệt</td>
+                  <td>Phong nhiệt phạm Phế vệ</td>
+                  <td>Sốt, sợ gió, đau họng, đờm vàng, rêu vàng, mạch phù sác</td>
+                  <td>Biểu – Nhiệt – Thực</td>
+                  <td>Ngân kiều tán</td>
+                </tr>
+                <tr>
+                  <td><strong>Đau thắt lưng cấp</strong></td>
+                  <td>Yêu thống cấp</td>
+                  <td>Khí trệ huyết ứ / Phong hàn</td>
+                  <td>Đau lưng đột ngột sau sai tư thế/nhiễm lạnh, co cứng cơ lưng</td>
+                  <td>Biểu / Lý – Thực</td>
+                  <td>Thân thống trục ứ thang / Cửu vị khương hoạt thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Vẹo cổ cấp</strong></td>
+                  <td>Lạc chẩm</td>
+                  <td>Phong hàn / Huyết ứ trệ kinh gáy</td>
+                  <td>Đau cứng gáy sau khi ngủ dậy ngoái đầu khó, chườm ấm giảm</td>
+                  <td>Biểu – Hàn / Thực</td>
+                  <td>Quyên tý thang gia giảm / Cát cánh thang</td>
+                </tr>
+                <tr>
+                  <td><strong>Mất ngủ mạn tính</strong></td>
+                  <td>Thất miên / Bất mị</td>
+                  <td>Tâm Tỳ khí huyết hư / Can Thận âm hư</td>
+                  <td>Khó ngủ, giật mình, hồi hộp, hay quên, lưỡi nhợt/đỏ, mạch tế</td>
+                  <td>Lý – Hư (Âm/Huyết hư)</td>
+                  <td>Quy tỳ thang / Thiên vương bổ tâm đan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: DANH MỤC 30 HUYỆT VỊ & BÁT HỘI HUYỆT -->
+      <div id="ctab3" class="hidden">
+        <div class="cheat-card">
+          <h3><span class="icon-tag">📌</span> Danh mục 30 Huyệt vị lâm sàng hay thi nhất & Lục Tổng Huyệt</h3>
+
+          <div class="formula-box">
+            <strong>🎯 Công thức Lục Tổng Huyệt & Bát Hội Huyệt (Tra là trúng):</strong>
+            • <b>Yêu bối Ủy trung cầu:</b> Đau lưng, thắt lưng, mông ➔ Huyệt <b>Ủy trung</b><br>
+            • <b>Diện khẩu Hợp cốc thu:</b> Bệnh vùng mặt, miệng, răng, mắt ➔ Huyệt <b>Hợp cốc</b><br>
+            • <b>Đầu hạng Phong trì tầm:</b> Đau đầu, cổ gáy, cảm mạo ➔ Huyệt <b>Phong trì</b><br>
+            • <b>Tâm ngực Túc tam lý:</b> Đau bụng, dạ dày, Tỳ vị hư ➔ Huyệt <b>Túc tam lý</b><br>
+            • <b>Bụng dưới Tam âm giao:</b> Bụng dưới, tiểu đêm, phụ khoa ➔ Huyệt <b>Tam âm giao</b><br>
+            • <b>Cổ gáy Liệt khuyết tầm:</b> Ho, hen, đau cổ gáy ➔ Huyệt <b>Liệt khuyết</b><br>
+            ---<br>
+            • <b>Cân hội Dương lăng tuyền:</b> Co cứng gân cơ, khớp ➔ Huyệt <b>Dương lăng tuyền</b><br>
+            • <b>Huyết hội Cách du:</b> Huyết ứ, huyết hư ➔ Huyệt <b>Cách du</b><br>
+            • <b>Cốt hội Đại trữ:</b> Đau nhức xương khớp ➔ Huyệt <b>Đại trữ</b>
+          </div>
+
+          <h4 style="color:var(--brand2); margin:16px 0 10px;">Bảng vị trí 30 Huyệt vị lâm sàng trọng điểm:</h4>
+          <div class="table-responsive">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th>Vùng cơ thể</th>
+                  <th>Tên huyệt</th>
+                  <th>Vị trí xác định nhanh</th>
+                  <th>Tác dụng lâm sàng chính</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="4"><strong>Vùng Đầu Mặt Cổ</strong></td>
+                  <td><b>Địa thương</b></td>
+                  <td>Giáp góc miệng ra 0,4 thốn</td>
+                  <td>Méo miệng, chảy dãi (Liệt VII)</td>
+                </tr>
+                <tr>
+                  <td><b>Giáp xa</b></td>
+                  <td>Bờ trước góc hàm 1 thốn (cắn răng lồi cơ)</td>
+                  <td>Lệch cằm, cắn rãnh má (Liệt VII)</td>
+                </tr>
+                <tr>
+                  <td><b>Dương bạch</b></td>
+                  <td>Trên lông mày 1 thốn (đường thẳng qua đồng tử)</td>
+                  <td>Không nhăn được trán, sụp mi</td>
+                </tr>
+                <tr>
+                  <td><b>Phong trì</b></td>
+                  <td>Lõm sau tai, bờ ngoài cơ thang</td>
+                  <td>Khu phong giải cảm, đau đầu cổ gáy</td>
+                </tr>
+                <tr>
+                  <td rowspan="4"><strong>Chi Trên (Tay)</strong></td>
+                  <td><b>Kiên ngụ</b></td>
+                  <td>Lõm trước dưới mỏm quạ (khi giạng tay 90°)</td>
+                  <td>Đau khớp vai, yếu liệt tay</td>
+                </tr>
+                <tr>
+                  <td><b>Khúc trì</b></td>
+                  <td>Nếp gấp nếp khoeo khuỷu tay (khi gấp khuỷu)</td>
+                  <td>Thông kinh lạc tay, thanh nhiệt</td>
+                </tr>
+                <tr>
+                  <td><b>Thủ tam lý</b></td>
+                  <td>Dưới Khúc trì 2 thốn dọc đường nếp gấp</td>
+                  <td>Tê yếu tay, đau khuỷu tay</td>
+                </tr>
+                <tr>
+                  <td><b>Hợp cốc</b></td>
+                  <td>Giữa kẽ xương bàn ngón 1 và 2 (tay)</td>
+                  <td>Chữa bệnh vùng đầu mặt, giải biểu</td>
+                </tr>
+                <tr>
+                  <td rowspan="4"><strong>Lưng & Thắt Lưng</strong></td>
+                  <td><b>Thận du</b></td>
+                  <td>Dưới mỏm gai đốt sống thắt lưng L2 ra 1,5 thốn</td>
+                  <td>Bổ Thận khí, đau thắt lưng, tiểu đêm</td>
+                </tr>
+                <tr>
+                  <td><b>Đại trường du</b></td>
+                  <td>Dưới mỏm gai đốt sống thắt lưng L4 ra 1,5 thốn</td>
+                  <td>Đau thắt lưng, đau thần kinh tọa</td>
+                </tr>
+                <tr>
+                  <td><b>Can du / Tỳ du</b></td>
+                  <td>Dưới mỏm gai T9 / T11 ra 1,5 thốn</td>
+                  <td>Bổ Can huyết / Bổ Tỳ vận hóa</td>
+                </tr>
+                <tr>
+                  <td><b>Cách du</b></td>
+                  <td>Dưới mỏm gai T7 ra 1,5 thốn (Huyết hội)</td>
+                  <td>Hoạt huyết hóa ứ, chữa đau cố định</td>
+                </tr>
+                <tr>
+                  <td rowspan="6"><strong>Chi Dưới (Chân)</strong></td>
+                  <td><b>Hoàn khiêu</b></td>
+                  <td>Điểm 1/3 ngoài đoạn nối mấu chuyển lớn & xương cùng</td>
+                  <td>Huyệt chốt đau thần kinh tọa, liệt chân</td>
+                </tr>
+                <tr>
+                  <td><b>Ủy trung</b></td>
+                  <td>Chính giữa nếp lằn khoeo chân</td>
+                  <td>Đau lưng thắt lưng, đau tọa (Yêu bối)</td>
+                </tr>
+                <tr>
+                  <td><b>Dương lăng tuyền</b></td>
+                  <td>Lõm trước dưới đầu xương chày (Cân hội)</td>
+                  <td>Co cứng gân cơ gối/chân, đau Đởm</td>
+                </tr>
+                <tr>
+                  <td><b>Độc tị / Tất nhãn</b></td>
+                  <td>Lõm bờ ngoài & bờ trong dưới xương bánh chè</td>
+                  <td>Huyệt đặc hiệu chữa đau khớp gối</td>
+                </tr>
+                <tr>
+                  <td><b>Túc tam lý</b></td>
+                  <td>Dưới Độc tị 3 thốn, cách mào chày 1 ngón tay</td>
+                  <td>Bổ sinh khí huyết, kiện Tỳ Vị</td>
+                </tr>
+                <tr>
+                  <td><b>Tam âm giao</b></td>
+                  <td>Trên đỉnh mắt cá trong 3 thốn, bờ sau xương chày</td>
+                  <td>Bổ âm, dưỡng huyết, chữa mất ngủ/tiểu đêm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: CỔ PHƯƠNG KINH ĐIỂN -->
+      <div id="ctab4" class="hidden">
+        <div class="cheat-card">
+          <h3><span class="icon-tag">💊</span> Các Bài thuốc Cổ phương kinh điển thường gặp trong đề thi</h3>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p1')"><span>1. Độc hoạt ký sinh thang (Bài thuốc số 1 về Xương
+                khớp)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p1">
+              • <b>Chỉ định:</b> Đau thần kinh tọa, thoái hóa khớp gối, đau lưng mạn tính thể <i>Phong hàn thấp tý trên
+                nền Can Thận hư</i>.
+              • <b>Thành phần & Công năng:</b>
+              - <i>Quân:</i> Độc hoạt (Khu phong trừ thấp tà ở chi dưới).
+              - <i>Thần:</i> Phòng phong, Tần giao, Tế tân (Khu phong tán hàn chỉ thống).
+              - <i>Tá:</i> Đỗ trọng, Tang ký sinh, Ngưu tất (Bổ Can Thận, cường gân cốt) + Đương quy, Xuyên khung, Thược
+              dược, Thục địa (Bổ khí huyết).
+              - <i>Sứ:</i> Cam thảo.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p2')"><span>2. Thân thống trục ứ thang (Bài thuốc đặc trị Huyết
+                ứ)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p2">
+              • <b>Chỉ định:</b> Đau thắt lưng, đau thần kinh tọa, đau khớp cấp sau chấn thương hoặc sai tư thế thể
+              <i>Khí trệ huyết ứ</i> (đau cố định như kim châm, nặng về đêm, lưỡi tím điểm ứ).
+              • <b>Vị thuốc cốt lõi:</b> Đào nhân, Hồng hoa, Đương quy, Xuyên khung, Nhũ hương, Một dược, Ngưu tất.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p3')"><span>3. Khương hoạt thắng thấp thang (Đặc trị Phong hàn
+                phần trên)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p3">
+              • <b>Chỉ định:</b> Liệt VII ngoại biên cấp do lạnh, vẹo cổ cấp, đau vai gáy do phong hàn ở biểu.
+              • <b>Vị thuốc cốt lõi:</b> Khương hoạt, Độc hoạt, Phòng phong, Cảo bản, Mạn kinh tử, Bạch chỉ.
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p4')"><span>4. Bổ dương hoàn ngũ thang (Đặc trị Di chứng Trúng
+                phong)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p4">
+              • <b>Chỉ định:</b> Di chứng đột quỵ liệt nửa người thể <i>Khí hư huyết ứ</i> (liệt chi, mệt mỏi, sắc nhợt,
+              lưỡi nhợt điểm ứ).
+              • <b>Đặc điểm:</b> Dùng liều rất cao <b>Hoàng kỳ</b> (để đại bổ khí) phối hợp với Đương quy vĩ, Đào nhân,
+              Hồng hoa, Xích thược, Xuyên khung, Địa long (để hoạt huyết thông kinh lạc).
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p5')"><span>5. Lục vị địa hoàng thang (Bài thuốc gốc bổ
+                Âm)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p5">
+              • <b>Chỉ định:</b> Di chứng trúng phong, đau lưng mạn thể <i>Can Thận âm hư</i> (da khô gầy, nóng lòng bàn
+              tay chân, bứt rứt về chiều, lưỡi đỏ ít rêu).
+              • <b>Công thức 3 Bổ 3 Tả:</b>
+              - <i>3 Bổ:</i> Thục địa (bổ Thận), Sơn thù (bổ Can), Hoài sơn (bổ Tỳ).
+              - <i>3 Tả:</i> Trạch tả (tả Thận hỏa), Đan bì (tả Can hỏa), Phục linh (tả Tỳ thấp).
+            </div>
+          </div>
+
+          <div class="tip-item">
+            <button class="tip-head" onclick="toggleTip('p6')"><span>6. Quy tỳ thang (Bài thuốc bổ Tâm
+                Tỳ)</span><span>+</span></button>
+            <div class="tip-body hidden" id="tip-p6">
+              • <b>Chỉ định:</b> Cảm mạo trên cơ địa suy nhược, mất ngủ, hồi hộp, chóng mặt thể <i>Tâm Tỳ khí huyết
+                hư</i>.
+              • <b>Vị thuốc chính:</b> Đảng sâm, Hoàng kỳ, Bạch thuật, Đương quy, Long nhãn, Táo nhân, Viễn chí.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: BỘ XỬ TRÍ TÌNH HUỐNG MỞ & TAI BIẾN -->
+      <div id="ctab5" class="hidden">
+        <div class="cheat-card">
+          <h3><span class="icon-tag">🚑</span> Bộ Xử trí tất cả Tình huống mở & Tai biến y học hay thi</h3>
+
+          <div class="open-solution">
+            <h4>1. Xử trí Say châm / Vượng châm (暈針) khi đang châm cứu?</h4>
+            <p>• Triệu chứng: Bệnh nhân hoa mắt, chóng mặt, buồn nôn, vã mồ hôi lạnh, sắc mặt nhợt, mạch tế.
+              • Xử trí cấp tốc: Rút ngay toàn bộ kim châm ➔ Cho nằm nghỉ đầu thấp ➔ Nới rộng quần áo ➔ Cho uống nước
+              đường ấm ➔ Bấm các huyệt cấp cứu: <b>Nhân trung</b>, <b>Thái dương</b>, <b>Hợp cốc</b>.</p>
+          </div>
+
+          <div class="open-solution">
+            <h4>2. Xử trí Tai biến Cong kim / Gãy kim khi châm cứu?</h4>
+            <p>• Cong kim: Không cố rút kim mạnh ➔ Nhẹ nhàng rút kim theo chiều cong của kim.
+              • Gãy kim: Dặn bệnh nhân giữ nguyên tư thế không động đậy ➔ Nếu đầu kim còn thò ra thì dùng kẹp gắp ra ➔
+              Nếu đầu kim ngập sâu dưới da thì ấn chặt xung quanh để lộ đầu kim gắp ra hoặc chuyển ngoại khoa xử trí.
+            </p>
+          </div>
+
+          <div class="open-solution">
+            <h4>3. Liệt VII ngoại biên: Nếu sau 10 ngày vẫn không nhắm kín mắt?</h4>
+            <p>• Đeo kính râm khi ra ngoài tránh bụi, gió và ánh sáng trực tiếp.
+              • Nhỏ nước muối sinh lý 0.9% hoặc nước mắt nhân tạo 3–4 lần/ngày giữ ẩm giác mạc.
+              • Tra mỡ kháng sinh và dùng băng che nhẹ mắt khi đi ngủ đêm.
+              • Hướng dẫn bệnh nhân vuốt nhẹ mi mắt xuống và tập nhắm mắt chủ động.</p>
+          </div>
+
+          <div class="open-solution">
+            <h4>4. Đau khớp gối mạn: Bài tập phòng teo cơ đùi & cứng khớp gối?</h4>
+            <p>• Bài tập gồng cơ tứ đầu đùi (Isometric Exercise): Nằm thẳng, ép chặt khoeo gối xuống đệm, giữ 5–10 giây
+              rồi thả lỏng. Làm 20–30 lần/ngày.
+              • Bài tập gấp duỗi gối không tải: Ngồi ghế cao đung đuôi chân nhẹ nhàng.
+              • Tránh tuyệt đối: Ngồi xổm, quỳ gối, xếp bằng, leo cầu thang nhiều tầng khi khớp sưng đau nóng.</p>
+          </div>
+
+          <div class="open-solution">
+            <h4>5. Đau thần kinh tọa: Hướng dẫn nằm nghỉ & vận động khi đau cấp?</h4>
+            <p>• Nằm nghỉ tuyệt đối trên giường đệm cứng 3–5 ngày đầu.
+              • Tư thế nằm ngửa: Kê gối nhỏ dưới khoeo chân (gập nhẹ gối & háng để giảm căng dây thần kinh tọa).
+              • Tránh cúi gập lưng, xoay vặn người đột ngột. Đeo đai thắt lưng khi di chuyển.</p>
+          </div>
+
+          <div class="open-solution">
+            <h4>6. Di chứng đột quỵ: Phòng ngừa té ngã & biến chứng co cứng vai?</h4>
+            <p>• Phòng té ngã: Dùng khung tập đi/gậy, lắp tay vịn nhà vệ sinh, giữ sàn khô ráo.
+              • Phòng co cứng & bán tróc khớp vai: Đeo đai đỡ khớp vai khi di chuyển, tập vận động tầm khớp đúng kỹ
+              thuật.
+              • Theo dõi huyết áp hàng ngày, tránh xúc động mạnh để phòng trúng phong tái phát.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LUYỆN TRẠM LÂM SÀNG (OSCE STATIONS) -->
+    <section id="cases">
+      <div id="caseListView">
+        <div class="hero">
+          <h1>Luyện trạm lâm sàng (OSCE)</h1>
+          <p>Mô phỏng 100% dạng đề thi trạm: Tự đối chiếu 10 mục chấm điểm Câu 1, thực hành chọn 4 huyệt, châm cứu, xoa
+            bóp Câu 2 và câu hỏi mở.</p>
+        </div>
+
+        <div class="case-filters">
+          <button class="case-filter active" data-case-filter="exam">📌 Case sát đề thi <span class="badge-num"
+              id="examCount">5</span></button>
+          <button class="case-filter" data-case-filter="advanced">Nâng cao & Ngân hàng đề mới</button>
+          <button class="case-filter" data-case-filter="all">Tất cả case</button>
+          <button class="case-filter" data-case-filter="missed">🚩 Mục cần ôn lại <span class="badge-num"
+              id="missedCount">0</span></button>
+        </div>
+
+        <div class="case-list" id="caseList"></div>
+      </div>
+
+      <div id="caseStudyView" class="hidden"></div>
+    </section>
+
+    <!-- SECTION 3: TRẮC NGHIỆM -->
+    <section id="home" class="hidden">
+      <div class="hero">
+        <h1>Ôn nhanh, nhớ đúng trọng tâm.</h1>
+        <p>325 câu trắc nghiệm Y học cổ truyền chia theo 13 bài chuẩn học phần.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="doneStat">0</b><span>đã làm</span></div>
+        <div class="stat"><b id="rightStat">0%</b><span>đúng</span></div>
+        <div class="stat"><b id="wrongStat">0</b><span>câu cần ôn</span></div>
+      </div>
+      <h2>Chọn cách học</h2>
+      <div class="mode-row">
+        <button class="mode active" data-mode="all">Toàn bộ 325 câu</button>
+        <button class="mode" data-mode="random">Ngẫu nhiên 25 câu</button>
+      </div>
+      <h2>Hoặc học theo bài</h2>
+      <div class="chapters" id="chapters"></div>
+    </section>
+
+    <!-- SECTION 4: TÀI LIỆU -->
+    <section id="materials" class="hidden">
+      <div class="hero">
+        <h1>Tài liệu ôn tập chuẩn</h1>
+        <p>Tất cả tài liệu PDF được tích hợp sẵn để tra cứu nhanh khi ôn thi offline.</p>
+      </div>
+      <h2>Lâm sàng Cơ Xương Khớp & Bệnh học (Mới)</h2>
+      <div class="material-list">
+        <a class="material" href="materials/ls-co-xuong-khop-yhct.pdf" target="_blank">
+          <span class="material-icon">❖</span>
+          <span><strong>Lâm sàng Cơ Xương Khớp theo YHCT</strong><small>Tài liệu bài giảng lâm sàng đầy đủ ·
+              PDF</small></span>
+          <span class="arrow">›</span>
+        </a>
+      </div>
+      <h2>Lý luận nền tảng</h2>
+      <div class="material-list">
+        <a class="material" href="materials/am-duong.pdf" target="_blank"><span
+            class="material-icon">☯</span><span><strong>Học thuyết Âm Dương</strong><small>Bài giảng · 34
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/ngu-hanh.pdf" target="_blank"><span
+            class="material-icon">◌</span><span><strong>Học thuyết Ngũ Hành</strong><small>Bài giảng · 36
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/tang-phu-day-du.pdf" target="_blank"><span
+            class="material-icon">◈</span><span><strong>Học thuyết Tạng phủ – lâm sàng</strong><small>Bản đầy đủ · 72
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/nguyen-nhan-gay-benh.pdf" target="_blank"><span
+            class="material-icon">⌁</span><span><strong>Nguyên nhân gây bệnh</strong><small>Ứng dụng chẩn đoán lâm sàng
+              · 47 trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/bat-cuong-bat-phap-day-du.pdf" target="_blank"><span
+            class="material-icon">◫</span><span><strong>Bát cương – Bát pháp</strong><small>Bản lâm sàng đầy đủ · 62
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/bat-cuong-va-mach.pdf" target="_blank"><span
+            class="material-icon">⌇</span><span><strong>Bảng ghi nhớ Bát cương và mạch</strong><small>Tóm tắt nhanh · 1
+              trang</small></span><span class="arrow">›</span></a>
+      </div>
+      <h2>Thuốc và Huyệt</h2>
+      <div class="material-list">
+        <a class="material" href="materials/giai-bieu-chua-ho.pdf" target="_blank"><span
+            class="material-icon">✦</span><span><strong>Thuốc giải biểu, chữa ho, hóa đàm</strong><small>Bài giảng · 40
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/thuoc-thanh-nhiet.pdf" target="_blank"><span
+            class="material-icon">✦</span><span><strong>Thuốc thanh nhiệt</strong><small>Bài giảng · 28
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/thuoc-hanh-khi.pdf" target="_blank"><span
+            class="material-icon">✦</span><span><strong>Thuốc hành khí</strong><small>Ứng dụng lâm sàng · 33
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/thuoc-hoat-huyet.pdf" target="_blank"><span
+            class="material-icon">✦</span><span><strong>Thuốc hoạt huyết</strong><small>Ứng dụng lâm sàng · 44
+              trang</small></span><span class="arrow">›</span></a>
+        <a class="material" href="materials/60-huyet.pdf" target="_blank"><span
+            class="material-icon">⊹</span><span><strong>Vị trí và tác dụng 60 huyệt</strong><small>Bài giảng · 76
+              trang</small></span><span class="arrow">›</span></a>
+      </div>
+    </section>
+
+    <!-- SECTION 5: QUIZ INTERACTION -->
+    <section id="quiz" class="hidden">
+      <div class="quiz-top">
+        <button class="back" id="exitBtn">← Thoát</button>
+        <div class="progress"><i id="bar"></i></div>
+        <span class="counter" id="counter"></span>
+      </div>
+      <span class="tag" id="chapterTag"></span>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="feedback" class="hidden"></div>
+      <div class="quiz-actions">
+        <button class="small-action" id="flagBtn">☆ Đánh dấu</button>
+        <button class="next hidden" id="nextBtn">Câu tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- SECTION 6: FINISH QUIZ -->
+    <section id="finish" class="finish hidden">
+      <span class="tag">Hoàn thành lượt học</span>
+      <div class="score" id="score"></div>
+      <p id="finishText"></p>
+      <button class="action" id="retryBtn">Làm lại</button>
+      <button class="action secondary" id="homeBtn">Về trang chủ</button>
+    </section>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="cases.js"></script>
+  <script src="games-data.js"></script>
+  <script>
+    // Dark Mode Theme Controller
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('yhct_theme', next);
+      updateThemeBtn();
+    }
+
+    function updateThemeBtn() {
+      const btn = document.getElementById('themeToggleBtn');
+      const meta = document.getElementById('metaThemeColor');
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (btn) {
+        btn.innerHTML = isDark ? '☀️ Sáng' : '🌙 Tối';
+        btn.title = isDark ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối';
+      }
+      if (meta) {
+        meta.setAttribute('content', isDark ? '#0b1324' : '#0e6655');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateThemeBtn);
+
+    // System State Management
+    const storeKey = 'yhct-quiz-v1';
+    const missedStoreKey = 'yhct-missed-items-v1';
+    const state = JSON.parse(localStorage.getItem(storeKey) || '{"answers":{},"flags":[]}');
+    const missedState = JSON.parse(localStorage.getItem(missedStoreKey) || '{}');
+
+    const $ = id => document.getElementById(id);
+    const clean = s => s.replace(/\s+(I\.\s*)?(NHỚ|HIỂU).*$/i, '').replace(/BỘ CÂU HỎI.*$/i, '').trim();
+    const flat = window.quizData.flatMap(c => c.questions.map(q => ({ ...q, chapter: c.id, title: clean(c.title) })));
+
+    let mode = 'all', active = [], index = 0, session = {}, selected = false;
+    let caseFilter = 'exam';
+
+    const save = () => localStorage.setItem(storeKey, JSON.stringify(state));
+    const saveMissed = () => {
+      localStorage.setItem(missedStoreKey, JSON.stringify(missedState));
+      updateMissedCount();
+    };
+
+    function updateStats() {
+      const values = Object.values(state.answers);
+      const right = values.filter(x => x.correct).length;
+      $('doneStat').textContent = values.length;
+      $('rightStat').textContent = values.length ? Math.round(right / values.length * 100) + '%' : '0%';
+      $('wrongStat').textContent = values.filter(x => !x.correct).length;
+      $('wrongBtn').textContent = 'Ôn câu sai' + (values.filter(x => !x.correct).length ? ' (' + values.filter(x => !x.correct).length + ')' : '');
+    }
+
+    function updateMissedCount() {
+      const count = Object.keys(missedState).length;
+      const el = $('missedCount');
+      if (el) el.textContent = count;
+    }
+
+    function renderChapters() {
+      $('chapters').innerHTML = window.quizData.map(c =>
+        `<button class="chapter" data-chapter="${c.id}"><span class="num">${c.id}</span><span><strong>${clean(c.title)}</strong><small>${c.questions.length} câu</small></span><span class="arrow">›</span></button>`
+      ).join('');
+      document.querySelectorAll('[data-chapter]').forEach(b => b.onclick = () => start(flat.filter(q => q.chapter == b.dataset.chapter)));
+    }
+
+    function shuffle(items) { return [...items].sort(() => Math.random() - .5); }
+
+    function start(items) {
+      active = shuffle(items); index = 0; session = {};
+      ['home', 'materials', 'cases', 'cheat', 'finish'].forEach(id => $(id).classList.add('hidden'));
+      $('quiz').classList.remove('hidden');
+      renderQuestion();
+      window.scrollTo(0, 0);
+    }
+
+    function renderQuestion() {
+      selected = false;
+      const q = active[index], prior = session[q.id];
+      $('counter').textContent = `${index + 1} / ${active.length}`;
+      $('bar').style.width = (index / active.length * 100) + '%';
+      $('chapterTag').textContent = 'Bài ' + q.chapter + ' · ' + q.title;
+      $('question').textContent = q.question;
+      $('feedback').className = 'hidden';
+      $('nextBtn').classList.add('hidden');
+      $('nextBtn').textContent = index === active.length - 1 ? 'Xem kết quả →' : 'Câu tiếp theo →';
+      $('flagBtn').textContent = (state.flags || []).includes(q.id) ? '★ Đã đánh dấu' : '☆ Đánh dấu';
+      $('options').innerHTML = Object.entries(q.options).map(([key, text]) =>
+        `<button class="option" data-key="${key}"><span class="letter">${key}</span><span>${text}</span></button>`
+      ).join('');
+      document.querySelectorAll('.option').forEach(b => b.onclick = () => answer(b.dataset.key));
+      if (prior) reveal(prior.choice);
+    }
+
+    function answer(choice) {
+      if (selected) return;
+      const q = active[index];
+      session[q.id] = { choice, correct: choice === q.answer };
+      state.answers[q.id] = { choice, correct: choice === q.answer, updated: Date.now() };
+      save(); reveal(choice); updateStats();
+    }
+
+    function reveal(choice) {
+      selected = true;
+      const q = active[index], correct = choice === q.answer;
+      document.querySelectorAll('.option').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.key === q.answer) b.classList.add('correct');
+        if (b.dataset.key === choice && !correct) b.classList.add('wrong');
+      });
+      const fb = $('feedback');
+      fb.textContent = correct ? '✓ Chính xác!' : 'Chưa đúng. Đáp án đúng là ' + q.answer + '.';
+      fb.className = 'feedback' + (correct ? '' : ' bad');
+      $('nextBtn').classList.remove('hidden');
+    }
+
+    function finish() {
+      $('quiz').classList.add('hidden');
+      $('finish').classList.remove('hidden');
+      const results = Object.values(session), right = results.filter(x => x.correct).length;
+      $('score').textContent = `${right}/${active.length}`;
+      $('finishText').textContent = right === active.length ? 'Xuất sắc, bạn đã trả lời đúng toàn bộ!' : `Bạn đúng ${right} câu. Các câu sai đã được lưu để ôn lại.`;
+    }
+
+    function showPage(page) {
+      ['home', 'materials', 'cases', 'cheat'].forEach(id => $(id).classList.toggle('hidden', id !== page));
+      $('quiz').classList.add('hidden');
+      $('finish').classList.add('hidden');
+      document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+      window.scrollTo(0, 0);
+    }
+
+    function switchCheatTab(tab) {
+      ['m1', 'm2', 'm3', 'm4', 'm5'].forEach((t, i) => {
+        const sec = $('ctab' + (i + 1));
+        const nav = $('cnav' + (i + 1));
+        if (sec) sec.classList.toggle('hidden', t !== tab);
+        if (nav) nav.classList.toggle('active', t === tab);
+      });
+    }
+
+    function toggleTip(id) {
+      const el = $('tip-' + id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    /* =========================================================
+       LUYỆN TRẠM LÂM SÀNG (OSCE STATIONS LOGIC)
+       ========================================================= */
+    const criteriaLabels = {
+      chung: '1. Chứng (Triệu chứng chính & Dữ kiện đặc trưng)',
+      nguyenNhan: '2. Nguyên nhân & Biện chứng luận trị',
+      viTri: '3. Vị trí bệnh (Tạng phủ / Kinh lạc / Biểu lý)',
+      batCuong: '4. Bát cương (Biểu/Lý, Hàn/Nhiệt, Hư/Thực, Âm/Dương)',
+      benhDanh: '5. Bệnh danh YHCT',
+      phapTri: '6. Pháp điều trị YHCT',
+      dungThuoc: '7. Điều trị dùng thuốc (Bài thuốc & Phân tích)',
+      khongDungThuoc: '8. Điều trị không dùng thuốc (Dưỡng sinh/Vật lý)',
+      anUongSinhHoat: '9. Chế độ ăn uống & Sinh hoạt',
+      tienLuongPhongBenh: '10. Tiên lượng & Phòng bệnh'
+    };
+
+    function renderCases() {
+      let items = window.caseData || [];
+      if (caseFilter === 'exam') {
+        items = items.filter(c => c.category === 'exam');
+      } else if (caseFilter === 'advanced') {
+        items = items.filter(c => c.category === 'advanced');
+      } else if (caseFilter === 'missed') {
+        const missedKeys = Object.keys(missedState);
+        const missedCaseIds = new Set(missedKeys.map(k => k.split('___')[0]));
+        items = items.filter(c => missedCaseIds.has(c.id));
+      }
+
+      const caseListEl = $('caseList');
+      if (items.length === 0) {
+        caseListEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted)">Không có case nào trong mục này.</div>`;
+        return;
+      }
+
+      caseListEl.innerHTML = items.map(c => `
+        <button class="case-item" data-case="${c.id}">
+          <div class="case-meta">
+            <span class="case-badge ${c.category === 'exam' ? 'exam' : (c.category === 'advanced' ? 'advanced' : '')}">
+              ${c.levelLabel || (c.category === 'exam' ? 'Trạm thi thực tế' : 'Nền tảng')}
+            </span>
+          </div>
+          <strong>${c.title}</strong>
+          <small>${c.summary || c.caseText.slice(0, 110)}…</small>
+        </button>
+      `).join('');
+
+      document.querySelectorAll('[data-case]').forEach(b => b.onclick = () => openCase(b.dataset.case));
+      updateMissedCount();
+    }
+
+    /* =========================================================
+       FEATURE 1: BÓC TÁCH TRIỆU CHỨNG (INTERACTIVE KEYWORDS)
+       ========================================================= */
+    function renderCaseTextWithKeywords(caseObj) {
+      if (!caseObj || !caseObj.caseText) return '';
+      let text = caseObj.caseText;
+      if (!caseObj.keywords || !caseObj.keywords.length) {
+        return text.replace(/\n/g, '<br>');
+      }
+
+      // Sort keywords by length descending so longer phrases match first
+      const sortedKws = [...caseObj.keywords].sort((a, b) => b.word.length - a.word.length);
+      const placeholders = [];
+
+      sortedKws.forEach((kw, idx) => {
+        const regex = new RegExp(kw.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        text = text.replace(regex, match => {
+          const ph = `___KW_PH_${idx}_${placeholders.length}___`;
+          const escapedHint = kw.hint.replace(/'/g, "\\'");
+          placeholders.push({
+            placeholder: ph,
+            html: `<span class="symptom-tag" onclick="toggleSymptomTooltip(event, this, '${escapedHint}')">${match}</span>`
+          });
+          return ph;
+        });
+      });
+
+      placeholders.forEach(p => {
+        text = text.replace(p.placeholder, p.html);
+      });
+
+      return text.replace(/\n/g, '<br>');
+    }
+
+    function toggleSymptomTooltip(e, el, hint) {
+      e.stopPropagation();
+      const existing = el.querySelector('.symptom-tooltip');
+      document.querySelectorAll('.symptom-tooltip').forEach(tt => tt.remove());
+
+      if (!existing) {
+        const tt = document.createElement('div');
+        tt.className = 'symptom-tooltip';
+        tt.innerHTML = `💡 ${hint}`;
+        el.appendChild(tt);
+      }
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.symptom-tooltip').forEach(tt => tt.remove());
+    });
+
+    /* =========================================================
+       FEATURE 2: MINI-GAME TỰ XÂY DỰNG BÁT CƯƠNG
+       ========================================================= */
+    function checkBatCuongGame(caseId) {
+      const c = (window.caseData || []).find(x => x.id === caseId);
+      if (!c || !c.q1 || !c.q1.batCuong) return;
+
+      const viTri = $('bcSelectViTri').value;
+      const tinhChat = $('bcSelectTinhChat').value;
+      const trangThai = $('bcSelectTrangThai').value;
+      const msgBox = $('batCuongResultMsg');
+      msgBox.classList.remove('hidden');
+
+      if (!viTri || !tinhChat || !trangThai) {
+        msgBox.innerHTML = `
+          <div style="background:#fffbe6; border:1px solid #fcd34d; color:#92400e; padding:10px 14px; border-radius:12px; font-size:0.85rem;">
+            ⚠️ Vui lòng chọn đầy đủ cả 3 thuộc tính (Vị trí, Tính chất, Trạng thái) trước khi kiểm tra!
+          </div>`;
+        return;
+      }
+
+      const answerStr = c.q1.batCuong.toLowerCase();
+      const isViTriCorrect = answerStr.includes(viTri.toLowerCase());
+      const isTinhChatCorrect = answerStr.includes(tinhChat.toLowerCase()) ||
+        (tinhChat === 'Hàn - Nhiệt' && (answerStr.includes('hàn') && answerStr.includes('nhiệt')));
+      const isTrangThaiCorrect = answerStr.includes(trangThai.toLowerCase()) ||
+        (trangThai === 'Hư thực thác tạp' && (answerStr.includes('hư') && answerStr.includes('thực')));
+
+      if (isViTriCorrect && isTinhChatCorrect && isTrangThaiCorrect) {
+        msgBox.innerHTML = `
+          <div style="background:#ecfdf5; border:1px solid #6ee7b7; color:#065f46; padding:14px; border-radius:12px;">
+            <strong style="font-size:0.95rem;">🎉 Chính xác! Bạn đã biện chứng Bát Cương đúng.</strong>
+            <div style="margin-top:6px; font-size:0.88rem; line-height:1.5;">
+              <strong>Bát Cương chuẩn:</strong> ${c.q1.batCuong}<br>
+              <strong>💡 Gợi ý Pháp trị:</strong> ${c.q1.phapTri}
+            </div>
+          </div>`;
+        $('q1ContentBox').classList.remove('hidden');
+      } else {
+        msgBox.innerHTML = `
+          <div style="background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; padding:10px 14px; border-radius:12px; font-size:0.88rem;">
+            ❌ Chưa chính xác! Vui lòng đối chiếu kỹ lại triệu chứng bệnh sử và thử chọn lại (hoặc bấm xem đáp án 10 mục bên dưới).
+          </div>`;
+      }
+    }
+
+    function skipBatCuongGame() {
+      const msgBox = $('batCuongResultMsg');
+      if (msgBox) {
+        msgBox.classList.remove('hidden');
+        msgBox.innerHTML = `
+          <div style="background:#f1f5f9; border:1px solid #cbd5e1; color:#475569; padding:10px 14px; border-radius:12px; font-size:0.85rem;">
+            🔓 Đã mở khóa đáp án 10 mục trình bày bên dưới.
+          </div>`;
+      }
+      $('q1ContentBox').classList.remove('hidden');
+    }
+
+    /* =========================================================
+       FEATURE 3: GHÉP NỐI HUYỆT (MATCH THE ACUPOINT GAME)
+       ========================================================= */
+    let selectedColA = null;
+    let selectedColB = null;
+    let currentMatchState = {
+      matchedPairs: 0,
+      totalRequired: 4
+    };
+
+    function initHuyetMatchGame(c) {
+      if (!c || !c.q2 || !c.q2.huyetGoiY || !c.q2.huyetGoiY.length) return '';
+
+      const rawHuyet = c.q2.huyetGoiY;
+      currentMatchState.matchedPairs = 0;
+      currentMatchState.totalRequired = Math.min(4, rawHuyet.length);
+
+      const listA = rawHuyet.map((h, idx) => ({ idx, text: h.detail }));
+      const listB = rawHuyet.map((h, idx) => ({ idx, text: h.name }));
+
+      const shuffledA = [...listA].sort(() => Math.random() - 0.5);
+      const shuffledB = [...listB].sort(() => Math.random() - 0.5);
+
+      const colAHTML = shuffledA.map(item => `
+        <div class="match-card" data-col="A" data-idx="${item.idx}" onclick="handleMatchCardClick(this)">
+          📍 ${item.text}
+        </div>
+      `).join('');
+
+      const colBHTML = shuffledB.map(item => `
+        <div class="match-card" data-col="B" data-idx="${item.idx}" onclick="handleMatchCardClick(this)">
+          ✦ Huyệt <strong>${item.text}</strong>
+        </div>
+      `).join('');
+
+      const chamList = (c.q2.chamCuu || []).map((item, idx) => `
+        <label class="check-item">
+          <input type="checkbox" id="cham_chk_${idx}">
+          <span>${item}</span>
+        </label>
+      `).join('');
+
+      const xoaList = (c.q2.xoaBop || []).map((item, idx) => `
+        <label class="check-item">
+          <input type="checkbox" id="xoa_chk_${idx}">
+          <span>${item}</span>
+        </label>
+      `).join('');
+
+      return `
+        <div class="practice-sec">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <h4 style="margin:0;"><span class="step-badge">1</span> 🧩 Mini-game: Ghép nối Huyệt (Match the Acupoint)</h4>
+            <span style="font-size:0.75rem; color:#0284c7; background:#f0f9ff; padding:2px 8px; border-radius:12px; font-weight:600;">
+              Ghép đúng ≥ 4 cặp để mở khóa Kỹ thuật
+            </span>
+          </div>
+          <p style="font-size:.84rem; color:var(--muted); margin:4px 0 12px;">
+            Click 1 ô ở <strong>Cột A (Vị trí/Tác dụng)</strong> và 1 ô ở <strong>Cột B (Tên Huyệt)</strong> tương ứng để ghép cặp:
+          </p>
+
+          <div class="matching-container">
+            <div class="matching-col">
+              <h5 class="col-title">Cột A: Vị trí & Tác dụng</h5>
+              ${colAHTML}
+            </div>
+            <div class="matching-col">
+              <h5 class="col-title">Cột B: Tên Huyệt</h5>
+              ${colBHTML}
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:10px;">
+            <div style="font-size:0.88rem; font-weight:700; color:var(--brand2);" id="matchScoreText">
+              🎯 Tiến độ: <span id="matchSuccessCount" style="color:#059669;">0</span> / <span id="matchTotalCount">${currentMatchState.totalRequired}</span> huyệt ghép đúng
+            </div>
+            <button class="action secondary" style="font-size:0.8rem; padding:6px 12px;" onclick="skipHuyetMatchGame()">
+              🔓 Bỏ cuộc / Xem đáp án huyệt & Kỹ thuật
+            </button>
+          </div>
+        </div>
+
+        <div id="q2ProceduresSec" class="hidden">
+          <div class="practice-sec">
+            <h4><span class="step-badge">2</span> Kỹ thuật châm cứu</h4>
+            <div class="check-list">${chamList}</div>
+          </div>
+
+          <div class="practice-sec">
+            <h4><span class="step-badge">3</span> Kỹ thuật xoa bóp bấm huyệt (Tối thiểu 04 kỹ thuật)</h4>
+            <div class="check-list">${xoaList}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleMatchCardClick(el) {
+      if (el.classList.contains('matched')) return;
+
+      const col = el.dataset.col;
+      if (col === 'A') {
+        if (selectedColA) selectedColA.classList.remove('selected');
+        selectedColA = el;
+        el.classList.add('selected');
+      } else if (col === 'B') {
+        if (selectedColB) selectedColB.classList.remove('selected');
+        selectedColB = el;
+        el.classList.add('selected');
+      }
+
+      if (selectedColA && selectedColB) {
+        const idxA = selectedColA.dataset.idx;
+        const idxB = selectedColB.dataset.idx;
+        const cardA = selectedColA;
+        const cardB = selectedColB;
+
+        if (idxA === idxB) {
+          cardA.classList.remove('selected');
+          cardB.classList.remove('selected');
+          cardA.classList.add('matched');
+          cardB.classList.add('matched');
+
+          selectedColA = null;
+          selectedColB = null;
+
+          currentMatchState.matchedPairs += 1;
+          const countEl = $('matchSuccessCount');
+          if (countEl) countEl.innerText = currentMatchState.matchedPairs;
+
+          if (currentMatchState.matchedPairs >= currentMatchState.totalRequired) {
+            const sec = $('q2ProceduresSec');
+            if (sec) sec.classList.remove('hidden');
+          }
+        } else {
+          cardA.classList.add('mismatch');
+          cardB.classList.add('mismatch');
+          setTimeout(() => {
+            cardA.classList.remove('selected', 'mismatch');
+            cardB.classList.remove('selected', 'mismatch');
+            selectedColA = null;
+            selectedColB = null;
+          }, 500);
+        }
+      }
+    }
+
+    function skipHuyetMatchGame() {
+      document.querySelectorAll('.match-card').forEach(c => {
+        c.classList.remove('selected', 'mismatch');
+        c.classList.add('matched');
+      });
+      const countEl = $('matchSuccessCount');
+      if (countEl) countEl.innerText = currentMatchState.totalRequired;
+      const sec = $('q2ProceduresSec');
+      if (sec) sec.classList.remove('hidden');
+    }
+
+    const formatText = s => s ? s.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>') : '';
+
+    function toggleAllSpoilers() {
+      const spoilers = document.querySelectorAll('#caseStudyView .spoiler-text');
+      if (!spoilers.length) return;
+      const anyHidden = Array.from(spoilers).some(el => !el.classList.contains('revealed'));
+      spoilers.forEach(el => {
+        if (anyHidden) {
+          el.classList.add('revealed');
+        } else {
+          el.classList.remove('revealed');
+        }
+      });
+      const btn = $('toggleSpoilersBtn');
+      if (btn) {
+        btn.innerText = anyHidden ? '🙈 Che mờ lại tất cả đáp án' : '👁 Hiển thị toàn bộ đáp án';
+      }
+    }
+
+    function openCase(id) {
+      const c = (window.caseData || []).find(x => x.id === id);
+      if (!c) return;
+      const draftKey = 'yhct-case-note-' + id;
+
+      $('caseListView').classList.add('hidden');
+      const view = $('caseStudyView');
+      view.classList.remove('hidden');
+
+      const criteriaKeys = ['chung', 'nguyenNhan', 'viTri', 'batCuong', 'benhDanh', 'phapTri', 'dungThuoc', 'khongDungThuoc', 'anUongSinhHoat', 'tienLuongPhongBenh'];
+      const q1HTML = criteriaKeys.map((key, i) => {
+        const text = c.q1 ? c.q1[key] : null;
+        if (!text) return '';
+        const itemKey = `${c.id}___${key}`;
+        const isFlagged = !!missedState[itemKey];
+
+        return `
+          <div class="criterion" id="crit-box-${key}">
+            <button class="criterion-head" onclick="toggleCrit('${key}')">
+              <span><span class="num-tag">${i + 1}</span>${criteriaLabels[key]}</span>
+              <span style="font-size:1.1rem; color:var(--muted)" id="crit-icon-${key}">+</span>
+            </button>
+            <div class="criterion-body hidden" id="crit-body-${key}">
+              <div class="spoiler-hint">💡 Chạm vào vùng bị mờ để xem đáp án</div>
+              <div class="spoiler-text" onclick="this.classList.toggle('revealed')">${formatText(text)}</div>
+              <div class="criterion-actions">
+                <span>Bạn đã nhớ mục này chưa?</span>
+                <button class="miss-btn ${isFlagged ? 'flagged' : ''}" onclick="toggleMissedItem('${c.id}','${key}',this)">
+                  ${isFlagged ? '🚩 Đã lưu mục cần ôn' : '☆ Đánh dấu cần ôn'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      let openQHTML = '';
+      if (c.openQuestion) {
+        openQHTML = `
+          <div class="open-q-box">
+            <h4>❓ Câu hỏi mở & Xử trí tình huống lâm sàng</h4>
+            <p>${c.openQuestion.question}</p>
+            <button class="miss-btn" style="background:white; border-color:#fcd34d; color:#92400e;" onclick="$('openAnsBox').classList.toggle('hidden')">
+              💡 Xem Hướng dẫn Xử trí & Chăm sóc
+            </button>
+            <div class="open-a-ans hidden spoiler-text" id="openAnsBox" style="margin-top:10px;" onclick="this.classList.toggle('revealed')">
+              ${c.openQuestion.answer}
+            </div>
+          </div>
+        `;
+      }
+
+      let reasoningHTML = '';
+      if (c.reasoning && c.reasoning.length) {
+        const items = c.reasoning.map(r => `
+          <div class="reasoning-item">
+            <div><strong>Dữ kiện đề bài:</strong> ${r.evidence}</div>
+            <div><span>➜ Kết luận YHCT:</span> <span class="spoiler-text" onclick="this.classList.toggle('revealed')">${r.conclusion}</span></div>
+          </div>
+        `).join('');
+
+        reasoningHTML = `
+          <div class="reasoning-box">
+            <h4>🔍 Phân tích "Vì sao" (Đối chiếu Dữ kiện đề bài → Kết luận)</h4>
+            ${items}
+          </div>
+        `;
+      }
+
+      let trapHTML = '';
+      if (c.trap) {
+        trapHTML = `
+          <div class="open-q-box" style="background:#fef2f2; border-color:#fca5a5; margin-top:16px;">
+            <h4 style="color:#991b1b;">⚡ Bẫy Lâm Sàng </h4>
+            <p style="color:#7f1d1d; font-weight:700;">${c.trap.question}</p>
+            <button class="miss-btn" style="background:white; border-color:#f87171; color:#991b1b;" onclick="$('trapAnsBox').classList.toggle('hidden')">
+              🚨 Mở Đáp án
+            </button>
+            <div class="open-a-ans hidden spoiler-text" id="trapAnsBox" style="margin-top:10px; border-color:#fecaca; color:#7f1d1d;" onclick="this.classList.toggle('revealed')">
+              ${formatText(c.trap.answer)}
+            </div>
+          </div>
+        `;
+      }
+
+      view.innerHTML = `
+        <div class="study-head">
+          <button id="backCases">← Danh sách trạm thi</button>
+          <span class="case-badge ${c.category === 'exam' ? 'exam' : ''}">${c.levelLabel || 'Luyện trạm thi'}</span>
+        </div>
+
+        <div class="station-card">
+          <span class="tag">Đề thi Trạm lâm sàng</span>
+          <h3>${c.title}</h3>
+          <div style="margin-top:8px; margin-bottom:12px;">
+            <button id="toggleSpoilersBtn" class="action secondary" style="font-size:.82rem; padding:6px 12px;" onclick="toggleAllSpoilers()">
+              👁 Hiển thị toàn bộ đáp án
+            </button>
+          </div>
+          <div class="case-text">${renderCaseTextWithKeywords(c)}</div>
+
+          <div style="margin-top:16px;">
+            <label style="font-size:.84rem; font-weight:700; color:var(--brand2);">Ghi nháp lập luận bài làm của bạn:</label>
+            <textarea class="scratch" id="caseScratch" placeholder="Tự điền nháp 10 mục / chọn huyệt trước khi xem đáp án mẫu..."></textarea>
+            <p class="save-note">Nội dung ghi nháp tự lưu offline trên thiết bị này.</p>
+          </div>
+        </div>
+
+        <h2>Mở Đáp án & Thực hành Trạm thi</h2>
+
+        <div class="station-nav">
+          <button class="active" id="tabNavQ1" onclick="switchStationTab('q1')">Câu 1: 10 Mục trình bày</button>
+          <button id="tabNavQ2" onclick="switchStationTab('q2')">Câu 2: Thực hành Huyệt & Kỹ thuật</button>
+          <button id="tabNavOpen" onclick="switchStationTab('open')">Câu hỏi mở & Bẫy lâm sàng</button>
+        </div>
+
+        <div id="secTabQ1">
+          <div class="bat-cuong-game-box" id="batCuongGameBox">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+              <h4 style="margin:0; color:#1e293b; font-size:.95rem; display:flex; align-items:center; gap:6px;">
+                <span>🧩</span> Mini-game: Tự xây dựng Bát Cương
+              </h4>
+              <span style="font-size:0.75rem; color:#0284c7; background:#f0f9ff; padding:2px 8px; border-radius:12px; font-weight:600;">
+                Thử thách biện chứng
+              </span>
+            </div>
+            <p style="font-size:.85rem; color:#475569; margin-bottom:14px;">
+              Đọc kỹ Bệnh sử (bản bóc tách triệu chứng ở trên) và chọn chính xác 3 thuộc tính Bát Cương của ca bệnh này để mở khóa đáp án 10 mục trình bày:
+            </p>
+            
+            <div class="bat-cuong-selects">
+              <div class="select-group">
+                <label>1. Vị trí bệnh</label>
+                <select id="bcSelectViTri">
+                  <option value="">-- Chọn Vị trí --</option>
+                  <option value="Biểu">Biểu</option>
+                  <option value="Lý">Lý</option>
+                  <option value="Biểu kiêm Lý">Biểu kiêm Lý</option>
+                </select>
+              </div>
+
+              <div class="select-group">
+                <label>2. Tính chất</label>
+                <select id="bcSelectTinhChat">
+                  <option value="">-- Chọn Tính chất --</option>
+                  <option value="Hàn">Hàn</option>
+                  <option value="Nhiệt">Nhiệt</option>
+                  <option value="Hàn - Nhiệt">Hàn - Nhiệt</option>
+                  <option value="Hư Nhiệt">Hư Nhiệt</option>
+                  <option value="Hư Hàn">Hư Hàn</option>
+                </select>
+              </div>
+
+              <div class="select-group">
+                <label>3. Trạng thái</label>
+                <select id="bcSelectTrangThai">
+                  <option value="">-- Chọn Trạng thái --</option>
+                  <option value="Thực">Thực</option>
+                  <option value="Hư">Hư</option>
+                  <option value="Hư thực thác tạp">Hư thực thác tạp</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+              <button class="action primary" style="font-size:0.85rem; padding:8px 16px;" onclick="checkBatCuongGame('${c.id}')">
+                🎯 Kiểm tra Bát Cương
+              </button>
+              <button class="action secondary" style="font-size:0.85rem; padding:8px 16px;" onclick="skipBatCuongGame()">
+                🔓 Bỏ cuộc / Xem đáp án 10 mục
+              </button>
+            </div>
+
+            <div id="batCuongResultMsg" class="hidden" style="margin-top:14px;"></div>
+          </div>
+
+          <div id="q1ContentBox" class="hidden">
+            <div class="criteria-box">${q1HTML}</div>
+          </div>
+        </div>
+
+        <div id="secTabQ2" class="hidden">
+          ${initHuyetMatchGame(c)}
+        </div>
+
+        <div id="secTabOpen" class="hidden">
+          ${openQHTML}
+          ${trapHTML}
+          ${reasoningHTML}
+        </div>
+      `;
+
+      const note = $('caseScratch');
+      note.value = localStorage.getItem(draftKey) || '';
+      note.oninput = () => localStorage.setItem(draftKey, note.value);
+
+      $('backCases').onclick = () => {
+        view.classList.add('hidden');
+        $('caseListView').classList.remove('hidden');
+        window.scrollTo(0, 0);
+        renderCases();
+      };
+
+      window.scrollTo(0, 0);
+    }
+
+    function toggleCrit(key) {
+      const body = $('crit-body-' + key);
+      const icon = $('crit-icon-' + key);
+      if (body) {
+        body.classList.toggle('hidden');
+        icon.textContent = body.classList.contains('hidden') ? '+' : '−';
+      }
+    }
+
+    function toggleMissedItem(caseId, critKey, btn) {
+      const key = `${caseId}___${critKey}`;
+      if (missedState[key]) {
+        delete missedState[key];
+        btn.classList.remove('flagged');
+        btn.textContent = '☆ Đánh dấu cần ôn';
+      } else {
+        missedState[key] = true;
+        btn.classList.add('flagged');
+        btn.textContent = '🚩 Đã lưu mục cần ôn';
+      }
+      saveMissed();
+    }
+
+    function toggleHuyetSelect(caseId, idx, chip) {
+      chip.classList.toggle('selected');
+      const countEl = document.querySelectorAll('.huyet-chip.selected').length;
+      const selectCountSpan = $('huyetCountSelect');
+      if (selectCountSpan) selectCountSpan.textContent = countEl;
+    }
+
+    function switchStationTab(tab) {
+      ['q1', 'q2', 'open'].forEach(t => {
+        const sec = $('secTab' + t.charAt(0).toUpperCase() + t.slice(1));
+        const nav = $('tabNav' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (sec) sec.classList.toggle('hidden', t !== tab);
+        if (nav) nav.classList.toggle('active', t === tab);
+      });
+    }
+
+    // App Control Setup
+    document.querySelectorAll('.mode').forEach(b => b.onclick = () => {
+      mode = b.dataset.mode;
+      document.querySelectorAll('.mode').forEach(x => x.classList.toggle('active', x === b));
+      start(mode === 'random' ? shuffle(flat).slice(0, 25) : flat);
+    });
+
+    $('nextBtn').onclick = () => index === active.length - 1 ? finish() : (index++, renderQuestion(), window.scrollTo(0, 0));
+    $('exitBtn').onclick = () => { showPage('home'); updateStats(); };
+    $('flagBtn').onclick = () => {
+      const id = active[index].id, i = (state.flags || []).indexOf(id);
+      if (i < 0) state.flags.push(id); else state.flags.splice(i, 1);
+      save(); renderQuestion();
+    };
+    $('wrongBtn').onclick = () => {
+      const ids = new Set(Object.entries(state.answers).filter(([, v]) => !v.correct).map(([id]) => id));
+      const items = flat.filter(q => ids.has(q.id));
+      if (items.length) start(items); else alert('Chưa có câu sai để ôn.');
+    };
+    $('retryBtn').onclick = () => start(active);
+    $('homeBtn').onclick = () => { showPage('home'); updateStats(); };
+
+    document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => showPage(b.dataset.page));
+    document.querySelectorAll('[data-case-filter]').forEach(b => b.onclick = () => {
+      caseFilter = b.dataset.caseFilter;
+      document.querySelectorAll('[data-case-filter]').forEach(x => x.classList.toggle('active', x === b));
+      renderCases();
+    });
+
+    // Initial Render
+    renderCases();
+    renderChapters();
+    updateStats();
+    updateMissedCount();
+  </script>
+
+  <!-- KHUNG MÀN HÌNH FLASHCARD (Mặc định ẩn) -->
+  <div id="flashcardModal" class="fc-overlay" style="display: none;">
+    <div class="fc-container">
+      <div class="fc-header">
+        <h3>⚡ Trạm Rèn Phản Xạ</h3>
+        <span id="fcCounter" style="font-weight:700; color:var(--brand2, #059669); font-size: 0.95rem;">1/20</span>
+        <button id="btnCloseFlashcard" class="fc-close">❌</button>
+      </div>
+
+      <!-- Hiệu ứng lật thẻ 3D -->
+      <div class="fc-scene" id="fcScene">
+        <div class="fc-card" id="fcCard">
+          <!-- Mặt trước: Câu hỏi -->
+          <div class="fc-face fc-front">
+            <p class="fc-label">❓ CÂU HỎI PHẢN XẠ</p>
+            <h2 id="fcQuestion">Bệnh nhân có Mạch Huyền, Rêu lưỡi vàng dày là thuộc thể nào?</h2>
+            <p class="fc-hint">👉 Click vào thẻ để lật đáp án</p>
+          </div>
+          <!-- Mặt sau: Đáp án -->
+          <div class="fc-face fc-back">
+            <p class="fc-label">💡 ĐÁP ÁN CHÍNH XÁC</p>
+            <h2 id="fcAnswer">Thể Can Đởm Thấp Nhiệt</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-actions">
+        <button id="btnPrevCard" class="fc-btn">⬅️ Quay lại</button>
+        <button id="btnShuffleCard" class="fc-btn fc-btn-warm">🔀 Trộn bài</button>
+        <button id="btnNextCard" class="fc-btn fc-btn-primary">Tiếp theo ➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KHUNG MÀN HÌNH GAME (Mặc định ẩn) -->
+  <div id="gameModal" class="game-modal" style="display: none;">
+    <div class="game-modal-content">
+      <div class="game-header">
+        <h3 id="gameTitle">Tên Game</h3>
+        <button class="btn-close-game" onclick="closeGame()">❌ Thoát</button>
+      </div>
+
+      <!-- Nội dung Game sẽ được đổ vào đây bằng Javascript -->
+      <div id="gameArea" class="game-area"></div>
+    </div>
+  </div>
+
+  <script>
+    // ================= LOGIC ĐIỀU KHIỂN FLASHCARD 3D =================
+    let currentCardIndex = 0;
+    const fcModal = document.getElementById('flashcardModal');
+    const fcCard = document.getElementById('fcCard');
+    const fcQuestion = document.getElementById('fcQuestion');
+    const fcAnswer = document.getElementById('fcAnswer');
+    const fcCounter = document.getElementById('fcCounter');
+
+    function renderCard() {
+      const cards = window.matrixFlashcards || [];
+      if (!cards || cards.length === 0) return;
+      fcCard.classList.remove('is-flipped');
+      setTimeout(() => {
+        fcQuestion.innerText = cards[currentCardIndex].q;
+        fcAnswer.innerText = cards[currentCardIndex].a;
+        fcCounter.innerText = `${currentCardIndex + 1} / ${cards.length}`;
+      }, 150);
+    }
+
+    if ($('btnOpenFlashcard')) {
+      $('btnOpenFlashcard').onclick = () => {
+        fcModal.style.display = 'flex';
+        renderCard();
+      };
+    }
+
+    if ($('btnCloseFlashcard')) {
+      $('btnCloseFlashcard').onclick = () => {
+        fcModal.style.display = 'none';
+      };
+    }
+
+    if (fcCard) {
+      fcCard.onclick = () => {
+        fcCard.classList.toggle('is-flipped');
+      };
+    }
+
+    if ($('btnNextCard')) {
+      $('btnNextCard').onclick = () => {
+        const cards = window.matrixFlashcards || [];
+        if (!cards.length) return;
+        currentCardIndex = (currentCardIndex + 1) % cards.length;
+        renderCard();
+      };
+    }
+
+    if ($('btnPrevCard')) {
+      $('btnPrevCard').onclick = () => {
+        const cards = window.matrixFlashcards || [];
+        if (!cards.length) return;
+        currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+        renderCard();
+      };
+    }
+
+    if ($('btnShuffleCard')) {
+      $('btnShuffleCard').onclick = () => {
+        if (window.matrixFlashcards) {
+          window.matrixFlashcards.sort(() => Math.random() - 0.5);
+        }
+        currentCardIndex = 0;
+        renderCard();
+      };
+    }
+
+    // ================= HỆ THỐNG GAME TRẠM GIẢI TRÍ & ÔN LẠI BÀI =================
+    function closeGame() {
+      const gameModal = document.getElementById('gameModal');
+      if (typeof quizTimer !== 'undefined' && quizTimer) clearInterval(quizTimer);
+      if (gameModal) gameModal.style.display = 'none';
+    }
+
+    function goToReview(type, target) {
+      closeGame();
+      if (type === 'cheat') {
+        showPage('cheat');
+        if (target) switchCheatTab(target);
+      } else if (type === 'case') {
+        showPage('cases');
+        if (target) openCase(target);
+      } else if (type === 'materials') {
+        showPage('materials');
+      } else if (type === 'flashcard') {
+        const fcModal = document.getElementById('flashcardModal');
+        if (fcModal) fcModal.style.display = 'flex';
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------------- GAME 1: NỐI TƠ HỒNG (MATCHING GAME) ----------------
+    let selectedLeft = null;
+    let selectedRight = null;
+
+    function startMatchingGame() {
+      const gameModal = document.getElementById('gameModal');
+      const gameTitle = document.getElementById('gameTitle');
+      const gameArea = document.getElementById('gameArea');
+      const data = window.matchData || [];
+
+      gameModal.style.display = 'flex';
+      gameTitle.innerText = "🔗 1. Nối Tơ Hồng: Triệu Chứng ➔ Bát Cương / Bài Thuốc";
+
+      let pool = [...data].sort(() => Math.random() - 0.5).slice(0, 4);
+      let lefts = [...pool].sort(() => Math.random() - 0.5);
+      let rights = [...pool].sort(() => Math.random() - 0.5);
+
+      let html = `<p style="font-size:0.88rem; color:#64748b; margin-bottom:14px; text-align:center;">Click chọn 1 ô bên Trái và 1 ô tương ứng bên Phải để ghép nối!</p>
+                  <div class="match-grid">
+                    <div class="match-col" id="colLeft">
+                      ${lefts.map(i => `<div class="match-item" data-id="${i.id}" onclick="selectMatch(this, 'left')">${i.left}</div>`).join('')}
+                    </div>
+                    <div class="match-col" id="colRight">
+                      ${rights.map(i => `<div class="match-item" data-id="${i.id}" onclick="selectMatch(this, 'right')">${i.right}</div>`).join('')}
+                    </div>
+                  </div>
+                  <div id="matchMismatchNotice"></div>`;
+      gameArea.innerHTML = html;
+    }
+
+    function selectMatch(element, side) {
+      const gameArea = document.getElementById('gameArea');
+      if (side === 'left') {
+        if (selectedLeft) selectedLeft.classList.remove('selected');
+        selectedLeft = element;
+        selectedLeft.classList.add('selected');
+      } else {
+        if (selectedRight) selectedRight.classList.remove('selected');
+        selectedRight = element;
+        selectedRight.classList.add('selected');
+      }
+
+      if (selectedLeft && selectedRight) {
+        if (selectedLeft.dataset.id === selectedRight.dataset.id) {
+          selectedLeft.classList.add('correct');
+          selectedRight.classList.add('correct');
+          selectedLeft = null; selectedRight = null;
+          const noticeEl = document.getElementById('matchMismatchNotice');
+          if (noticeEl) noticeEl.innerHTML = '';
+          setTimeout(() => {
+            const remaining = document.querySelectorAll('.match-item:not(.correct)');
+            if (remaining.length === 0) {
+              gameArea.innerHTML = `<div style="text-align:center; padding:30px;">
+                <h3 style="color:#059669; font-size:1.4rem;">🎉 Xuất sắc! Nối chính xác 100%!</h3>
+                <p style="color:#475569;">Bạn đã nắm vững logic triệu chứng và thể bệnh ma trận.</p>
+                <button class="btn-game" onclick="startMatchingGame()" style="margin-top:15px;">🔄 Chơi lượt ngẫu nhiên khác</button>
+              </div>`;
+            }
+          }, 600);
+        } else {
+          selectedLeft.classList.add('wrong');
+          selectedRight.classList.add('wrong');
+
+          const poolObj = (window.matchData || []).find(x => String(x.id) === String(selectedLeft.dataset.id));
+          const target = poolObj ? poolObj.target : null;
+          const label = target ? target.label : 'kiến thức liên quan';
+          const reviewBtnHTML = target ? `<div style="margin-top:8px;"><button class="btn-game" style="background:#0284c7; padding:6px 14px; font-size:0.82rem;" onclick="goToReview('${target.type}', '${target.tab || target.id}')">📖 Ôn lại bài: ${label}</button></div>` : '';
+
+          let noticeEl = document.getElementById('matchMismatchNotice');
+          if (!noticeEl) {
+            noticeEl = document.createElement('div');
+            noticeEl.id = 'matchMismatchNotice';
+            gameArea.appendChild(noticeEl);
+          }
+          noticeEl.innerHTML = `<div style="background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; padding:10px 14px; border-radius:12px; margin-top:14px; text-align:center; font-size:0.88rem;">
+            ❌ Ghép chưa chính xác! Vui lòng chọn lại.
+            ${reviewBtnHTML}
+          </div>`;
+
+          setTimeout(() => {
+            if (selectedLeft) selectedLeft.classList.remove('wrong', 'selected');
+            if (selectedRight) selectedRight.classList.remove('wrong', 'selected');
+            selectedLeft = null; selectedRight = null;
+          }, 600);
+        }
+      }
+    }
+
+    // ---------------- GAME 2: TÌM LỖI SAI BỆNH ÁN ----------------
+    let currentErrorCase = null;
+
+    function startFindErrorGame() {
+      const gameModal = document.getElementById('gameModal');
+      const gameTitle = document.getElementById('gameTitle');
+      const gameArea = document.getElementById('gameArea');
+      const data = window.errorData || [];
+
+      gameModal.style.display = 'flex';
+      gameTitle.innerText = "🕵️ 2. Bắt Lỗi Bệnh Án Bẫy YHCT";
+
+      currentErrorCase = data[Math.floor(Math.random() * data.length)];
+      let parts = currentErrorCase.text.split(/({|})/);
+      let htmlText = parts.map(p => {
+        if (p === '{' || p === '}') return '';
+        return `<span class="error-clickable" onclick="checkError(this, '${p === currentErrorCase.wrong}', '${currentErrorCase.fix.replace(/'/g, "\\'")}')">${p}</span>`;
+      }).join(' ');
+
+      gameArea.innerHTML = `
+        <h4 style="color: #059669; font-size:1.05rem; margin-top:0;">${currentErrorCase.title}</h4>
+        <p style="font-size:0.88rem; color:#475569; margin-bottom:12px;">Đọc kỹ đoạn bệnh án và click trực tiếp vào <b>TRIỆU CHỨNG SAI / MÂU THUẪN (BẪY)</b>:</p>
+        <div class="error-text-container">${htmlText}</div>
+        <div id="errorResult" style="margin-top: 18px; font-weight: bold; line-height:1.5;"></div>
+      `;
+    }
+
+    function checkError(element, isWrong, fixText) {
+      const resEl = document.getElementById('errorResult');
+      const target = (currentErrorCase && currentErrorCase.target) ? currentErrorCase.target : null;
+      const label = target ? target.label : 'kiến thức liên quan';
+      const reviewBtn = target ? `<button class="btn-game" style="background:#0284c7; padding:6px 14px; font-size:0.84rem; display:inline-block;" onclick="goToReview('${target.type}', '${target.tab || target.id}')">📖 Ôn lại bài: ${label}</button>` : '';
+
+      if (isWrong === 'true') {
+        element.classList.add('error-found');
+        resEl.style.color = "#059669";
+        resEl.innerHTML = `🎉 BẮT BÀI XUẤT SẮC! Bẫy này không lừa được bạn!<br><span style='font-size:0.88rem; font-weight:500; color:#334155;'>💡 ${fixText}</span><br><div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center;">${reviewBtn}<button class='btn-game' onclick='startFindErrorGame()'>➡️ Thử ca bệnh án khác</button></div>`;
+      } else {
+        element.classList.add('no-error');
+        resEl.style.color = "#dc2626";
+        resEl.innerHTML = `❌ Triệu chứng này hoàn toàn hợp lý với bệnh án! Tìm lại từ mâu thuẫn khác nhé.<br><div style="margin-top:10px;">${reviewBtn}</div>`;
+        setTimeout(() => element.classList.remove('no-error'), 800);
+      }
+    }
+
+    // ---------------- GAME 3: KÊ ĐƠN TỐC ĐỘ 10 GIÂY ----------------
+    let quizTimer;
+    let currentSpeedQuizObj = null;
+
+    function startQuizGame() {
+      const gameModal = document.getElementById('gameModal');
+      const gameTitle = document.getElementById('gameTitle');
+      const gameArea = document.getElementById('gameArea');
+      const data = window.speedQuizData || [];
+
+      gameModal.style.display = 'flex';
+      gameTitle.innerText = "⏱️ 3. Kê Đơn Tốc Độ 10 Giây";
+
+      currentSpeedQuizObj = data[Math.floor(Math.random() * data.length)];
+
+      let html = `
+        <div class="quiz-timer" id="quizTimer" style="width: 100%;"></div>
+        <div class="quiz-question">${currentSpeedQuizObj.q}</div>
+        <div class="quiz-options">
+          ${currentSpeedQuizObj.options.map((opt, idx) =>
+        `<button class="btn-option" onclick="checkQuiz(this, ${idx}, ${currentSpeedQuizObj.ans})">${String.fromCharCode(65 + idx)}. ${opt}</button>`
+      ).join('')}
+        </div>
+      `;
+      gameArea.innerHTML = html;
+
+      let timerBar = document.getElementById('quizTimer');
+      let timeLeft = 100;
+      if (quizTimer) clearInterval(quizTimer);
+      quizTimer = setInterval(() => {
+        timeLeft -= 1;
+        timerBar.style.width = timeLeft + '%';
+        if (timeLeft <= 0) {
+          clearInterval(quizTimer);
+          const target = currentSpeedQuizObj ? currentSpeedQuizObj.target : null;
+          const label = target ? target.label : 'bài học liên quan';
+          const reviewBtn = target ? `<button class="btn-game" style="background:#0284c7; margin-top:12px; width:100%; font-size:0.88rem;" onclick="goToReview('${target.type}', '${target.tab || target.id}')">📖 Ôn lại bài: ${label}</button>` : '';
+
+          gameArea.innerHTML = `<div style="text-align:center; padding:20px;">
+            <h3 style="color:#ef4444; font-size:1.3rem;">💀 HẾT 10 GIÂY! Bệnh nhân đã đi phòng khám khác!</h3>
+            ${reviewBtn}
+            <button class="btn-game" onclick="startQuizGame()" style="margin-top:10px; width:100%">🔄 Thử kê đơn lại</button>
+          </div>`;
+        }
+      }, 100);
+    }
+
+    function checkQuiz(btn, selectedIdx, correctIdx) {
+      const gameArea = document.getElementById('gameArea');
+      if (quizTimer) clearInterval(quizTimer);
+      let allBtns = document.querySelectorAll('.btn-option');
+
+      if (selectedIdx === correctIdx) {
+        btn.classList.add('correct');
+      } else {
+        btn.classList.add('wrong');
+        allBtns[correctIdx].classList.add('correct');
+      }
+
+      allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+      const target = currentSpeedQuizObj ? currentSpeedQuizObj.target : null;
+      const label = target ? target.label : 'bài học liên quan';
+      const reviewBtnHTML = (selectedIdx !== correctIdx && target) ? `<button class="btn-game" style="background:#0284c7; margin-top:12px; width:100%; font-size:0.88rem;" onclick="goToReview('${target.type}', '${target.tab || target.id}')">📖 Ôn lại bài: ${label}</button>` : '';
+
+      setTimeout(() => {
+        if (reviewBtnHTML) {
+          const btnBox = document.createElement('div');
+          btnBox.innerHTML = reviewBtnHTML;
+          gameArea.appendChild(btnBox);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn-game';
+        nextBtn.style.marginTop = '12px';
+        nextBtn.style.width = '100%';
+        nextBtn.innerText = 'Câu tiếp theo ➡️';
+        nextBtn.onclick = startQuizGame;
+        gameArea.appendChild(nextBtn);
+      }, 300);
+    }
+  </script>
+</body>
+
+</html>
